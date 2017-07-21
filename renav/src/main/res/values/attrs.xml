@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="NavigationView">
+        <attr name="navigation_menu" format="integer"/>
+        <attr name="selected_color" format="color"/>
+        <attr name="unselected_color" format="color"/>
+        <attr name="default_column" format="integer"/>
+    </declare-styleable>
+</resources>
