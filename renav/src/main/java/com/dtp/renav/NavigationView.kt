@@ -240,9 +240,9 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
     }
 
     fun attachColumnView(view: View) {
-        container?.removeAllViews()
+        container.removeAllViews()
 
-        container?.addView(view)
+        container.addView(view)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -265,7 +265,6 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
         var isSelected = false
     }
 
-    fun pxToDp(px: Int) = Math.round(px / (Resources.getSystem().displayMetrics.densityDpi / 160f))
     fun dpToPx(dp: Int) = Math.round(dp * (Resources.getSystem().displayMetrics.densityDpi / 160f))
     fun spToPx(sp: Int) = sp * Resources.getSystem().displayMetrics.scaledDensity
 }

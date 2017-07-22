@@ -5,6 +5,8 @@ import android.view.View
 /**
  * Created by ner on 7/12/17.
  */
-interface ColumnViewHolder {
+interface RowViewHolder<in T> {
     val rootView: View
+
+    fun bind(item: T)
 }

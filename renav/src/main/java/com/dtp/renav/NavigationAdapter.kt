@@ -7,7 +7,7 @@ import android.view.ViewGroup
  */
 interface NavigationAdapter {
 
-    fun getCurrentColumnViewType(columnId: Int): Int
-    fun createColumnViewHolderForType(parent: ViewGroup, type: Int): ColumnViewHolder
-    fun bindColumnView(column: Int, navigationView: NavigationView)
+    fun getRowId(columnId: Int): Int
+    fun createRowViewHolderForId(parent: ViewGroup, rowId: Int): RowViewHolder<*>
+    fun bindColumnView(columnId: Int, rowViewHolder: RowViewHolder<*>)
 }

@@ -5,6 +5,6 @@ package com.dtp.renav
  */
 interface ColumnViewPool {
 
-    fun getView(type: Int): ColumnViewHolder?
-    fun addView(type: Int, columnViewHolder: ColumnViewHolder)
+    fun getRowViewHolder(rowId: Int): RowViewHolder<*>?
+    fun putRowViewHolder(rowId: Int, rowViewHolder: RowViewHolder<*>)
 }

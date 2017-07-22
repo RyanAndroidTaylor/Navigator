@@ -12,7 +12,7 @@ class BasicNavigationManager(private var adapter: NavigationAdapter? = null) : N
 
     private var currentColumnId: Int = -1
 
-    private var currentColumnViewHolder: ColumnViewHolder? = null
+    private var currentRowViewHolder: RowViewHolder<*>? = null
 
     private lateinit var navigationView: NavigationView
 
@@ -26,23 +26,25 @@ class BasicNavigationManager(private var adapter: NavigationAdapter? = null) : N
 
     override fun columnSelected(columnId: Int) {
         adapter?.let { adapter ->
-            currentColumnViewHolder?.let {
-                val columnViewHolder = it
+            currentRowViewHolder?.let {
+                val rowViewHolder = it
 
-                currentColumnViewHolder = null
+                currentRowViewHolder = null
 
-                viewPool.addView(adapter.getCurrentColumnViewType(currentColumnId), columnViewHolder)
+                viewPool.putRowViewHolder(adapter.getRowId(currentColumnId), rowViewHolder)
             }
 
             currentColumnId = columnId
 
-            val viewType = adapter.getCurrentColumnViewType(columnId)
+            val rowId = adapter.getRowId(columnId)
 
-            viewPool.getView(viewType) ?: adapter.createColumnViewHolderForType(navigationView.container, viewType).let { columnViewHolder ->
-                currentColumnViewHolder = columnViewHolder
+            val loadedViewHolder = viewPool.getRowViewHolder(rowId) ?: adapter.createRowViewHolderForId(navigationView.container, rowId)
 
-                navigationView.attachColumnView(columnViewHolder.rootView)
-            }
+            currentRowViewHolder = loadedViewHolder
+
+            navigationView.attachColumnView(loadedViewHolder.rootView)
+
+            adapter.bindColumnView(columnId, loadedViewHolder)
         } ?: Log.i("BasicNavigationManager", "Column selected but no adapter was found.")
     }
 }

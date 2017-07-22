@@ -1,6 +1,6 @@
 package com.dtp.renav.base
 
-import com.dtp.renav.ColumnViewHolder
+import com.dtp.renav.RowViewHolder
 import com.dtp.renav.ColumnViewPool
 
 /**
@@ -8,17 +8,17 @@ import com.dtp.renav.ColumnViewPool
  */
 class BaseColumnViewPool : ColumnViewPool {
 
-    private val columnViewHolders = mutableMapOf<Int, ColumnViewHolder>()
+    private val rowViewHolders = mutableMapOf<Int, RowViewHolder<*>>()
 
-    override fun getView(type: Int): ColumnViewHolder? {
-        if (columnViewHolders.containsKey(type))
-            return columnViewHolders[type]
+    override fun getRowViewHolder(rowId: Int): RowViewHolder<*>? {
+        if (rowViewHolders.containsKey(rowId))
+            return rowViewHolders[rowId]
 
         return null
     }
 
-    override fun addView(type: Int, columnViewHolder: ColumnViewHolder) {
-        if (!columnViewHolders.containsKey(type))
-            columnViewHolders.put(type, columnViewHolder)
+    override fun putRowViewHolder(rowId: Int, rowViewHolder: RowViewHolder<*>) {
+        if (!rowViewHolders.containsKey(rowId))
+            rowViewHolders.put(rowId, rowViewHolder)
     }
 }
