@@ -50,7 +50,7 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
             selectColumn(initialTab)
         }
 
-    var initialTab: Int = -1
+    private var initialTab: Int = -1
 
     init {
         setWillNotDraw(false)
@@ -84,28 +84,26 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
 
         val wrapContentWidth = columns.size * MIN_COLUMN_WIDTH
 
-        val width: Int
-        when (widthMode) {
+        val width = when (widthMode) {
             View.MeasureSpec.UNSPECIFIED -> {
-                width = measureWidth
+                measureWidth
             }
             View.MeasureSpec.AT_MOST -> {
-                width = Math.min(widthMode, wrapContentWidth)
+                Math.min(widthMode, wrapContentWidth)
             }
-            View.MeasureSpec.EXACTLY -> width = measureWidth
-            else -> width = measureWidth
+            View.MeasureSpec.EXACTLY -> measureWidth
+            else -> measureWidth
         }
 
-        val height: Int
-        when (heightMode) {
+        val height = when (heightMode) {
             View.MeasureSpec.UNSPECIFIED -> {
-                height = BOTTOM_BAR_HEIGHT
+                BOTTOM_BAR_HEIGHT
             }
             View.MeasureSpec.AT_MOST -> {
-                height = Math.min(measureHeight, BOTTOM_BAR_HEIGHT)
+                Math.min(measureHeight, BOTTOM_BAR_HEIGHT)
             }
-            View.MeasureSpec.EXACTLY -> height = measureHeight
-            else -> height = measureHeight
+            View.MeasureSpec.EXACTLY -> measureHeight
+            else -> measureHeight
         }
 
         columnWidth = width / columns.size
@@ -114,11 +112,7 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
             tab.bounds.set(columnWidth * index, 0, columnWidth * (index + 1), height)
         }
 
-        //TODO Would like to handle the measure spec for children the same way FrameLayout does
-        val childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(measureWidth, MeasureSpec.EXACTLY)
-        val childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(measureHeight - dpToPx(56), MeasureSpec.EXACTLY)
-
-        getChildAt(0).measure(childWidthMeasureSpec, childHeightMeasureSpec)
+        measureContainer(measureWidth, measureHeight)
 
         setMeasuredDimension(width, height)
     }
@@ -161,6 +155,15 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
         container = getChildAt(0) as ViewGroup
 
         initialTab.let { columnSelected(it) }
+    }
+
+    fun handleBack(): Boolean = navigationManager?.handleBack() ?: false
+
+    private fun measureContainer(measureWidth: Int, measureHeight: Int) {
+        val childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(measureWidth, MeasureSpec.EXACTLY)
+        val childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(measureHeight - BOTTOM_BAR_HEIGHT, MeasureSpec.EXACTLY)
+
+        getChildAt(0).measure(childWidthMeasureSpec, childHeightMeasureSpec)
     }
 
     private fun insureContainerIsCorrect() {
@@ -211,7 +214,7 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
 
         val itemId = typedArray.getResourceId(android.support.v7.appcompat.R.styleable.MenuItem_android_id, -1)
         val itemTitle = typedArray.getText(android.support.v7.appcompat.R.styleable.MenuItem_android_title)
-        val itemIconResId = typedArray.getResourceId(android.support.v7.appcompat.R.styleable.MenuItem_android_icon, 0)
+        val itemIconResId = typedArray.getResourceId(android.support.v7.appcompat.R.styleable.MenuItem_android_icon, -1)
 
         addColumn(itemId, itemTitle.toString(), itemIconResId)
 
@@ -219,9 +222,13 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
     }
 
     private fun addColumn(itemId: Int, title: String, iconId: Int) {
-        val drawable = ContextCompat.getDrawable(context, iconId).mutate()
+        try {
+            val drawable = ContextCompat.getDrawable(context, iconId).mutate()
 
-        columns.add(Column(itemId, title, drawable))
+            columns.add(Column(itemId, title, drawable))
+        } catch (exception: Resources.NotFoundException) {
+            throw Resources.NotFoundException("Invalid resource ID for tab at index ${columns.size}")
+        }
     }
 
     private fun columnSelected(columnId: Int) {
@@ -265,6 +272,6 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
         var isSelected = false
     }
 
-    fun dpToPx(dp: Int) = Math.round(dp * (Resources.getSystem().displayMetrics.densityDpi / 160f))
-    fun spToPx(sp: Int) = sp * Resources.getSystem().displayMetrics.scaledDensity
+    private fun dpToPx(dp: Int) = Math.round(dp * (Resources.getSystem().displayMetrics.densityDpi / 160f))
+    private fun spToPx(sp: Int) = sp * Resources.getSystem().displayMetrics.scaledDensity
 }

@@ -10,4 +10,6 @@ interface NavigationManager {
     fun setAdapter(adapter: NavigationAdapter?)
 
     fun columnSelected(columnId: Int)
+
+    fun handleBack(): Boolean
 }

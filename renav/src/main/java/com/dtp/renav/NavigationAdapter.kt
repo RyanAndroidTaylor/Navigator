@@ -10,4 +10,5 @@ interface NavigationAdapter {
     fun getRowId(columnId: Int): Int
     fun createRowViewHolderForId(parent: ViewGroup, rowId: Int): RowViewHolder<*>
     fun bindColumnView(columnId: Int, rowViewHolder: RowViewHolder<*>)
+    fun handleBack(columnId: Int): Boolean
 }
