@@ -43,7 +43,8 @@ abstract class SimpleNavigationAdapter(columns: List<Column>) : NavigationAdapte
         }
     }
 
-    class Row<T>(val rowId: Int, private val item: T) {
+    abstract class Row<T>(private val item: T) {
+        abstract val rowId: Int
 
         @Suppress("UNCHECKED_CAST")
         fun bind(rowViewHolder: RowViewHolder<*>) {

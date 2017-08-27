@@ -2,6 +2,9 @@ package com.dtp.navigator
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import com.dtp.navigator.rows.RowOne
+import com.dtp.navigator.rows.RowThree
+import com.dtp.navigator.rows.RowTwo
 import com.dtp.renav.BasicNavigationManager
 import com.dtp.renav.NavigationView
 import com.dtp.renav.SimpleNavigationAdapter.Row
@@ -11,9 +14,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navView: NavigationView
 
-    private val columns = listOf(Column(R.id.One, Row(R.layout.row_two, 2L), Row(R.layout.row_three, "Three"), Row(R.layout.row_one, 1)),
-                                 Column(R.id.Two, Row(R.layout.row_two, 2L), Row(R.layout.row_three, "Three"), Row(R.layout.row_one, 1)),
-                                 Column(R.id.Three, Row(R.layout.row_three, "Three"), Row(R.layout.row_one, 1), Row(R.layout.row_two, 2L)))
+    private val columns = listOf(Column(R.id.One, RowTwo(2L), RowThree("Three"), RowOne(1)),
+                                 Column(R.id.Two, RowTwo(2L), RowThree("Three"), RowOne(1)),
+                                 Column(R.id.Three, RowThree("Three"), RowOne(1), RowTwo(2L)))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
