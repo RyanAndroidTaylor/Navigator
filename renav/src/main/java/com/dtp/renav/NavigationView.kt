@@ -23,10 +23,10 @@ import org.xmlpull.v1.XmlPullParserException
 // Do we create a styleable for changing the height of the navigation bar or do we in force the material design specs
 class NavigationView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : FrameLayout(context, attrs) {
 
-    private val ICON_SIZE = dpToPx(24)
-    private val BOTTOM_SPACING = dpToPx(10)
-    private val BOTTOM_BAR_HEIGHT = dpToPx(56)
-    private val MIN_COLUMN_WIDTH = dpToPx(80)
+    val ICON_SIZE = dpToPx(24)
+    val BOTTOM_SPACING = dpToPx(10)
+    val BOTTOM_BAR_HEIGHT = dpToPx(56)
+    val MIN_COLUMN_WIDTH = dpToPx(80)
 
     private val textPaint: Paint
     private var selectedColor: Int
@@ -109,7 +109,7 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
         columnWidth = width / columns.size
 
         columns.forEachIndexed { index, tab ->
-            tab.bounds.set(columnWidth * index, 0, columnWidth * (index + 1), height)
+            tab.bounds.set(columnWidth * index, measureHeight - BOTTOM_BAR_HEIGHT, columnWidth * (index + 1), height)
         }
 
         measureContainer(measureWidth, measureHeight)
