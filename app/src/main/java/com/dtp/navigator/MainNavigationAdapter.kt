@@ -16,9 +16,9 @@ class MainNavigationAdapter(columns: List<Column>) : SimpleNavigationAdapter(col
 
     override fun createRowViewHolderForId(parent: ViewGroup, rowId: Int): RowViewHolder<*> {
         return when (rowId) {
-            R.layout.row_one -> RowOneViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_one, parent, false))
-            R.layout.row_two -> RowTwoViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_two, parent, false))
-            R.layout.row_three -> RowThreeViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_three, parent, false))
+            R.layout.row_one -> RowOneViewHolder(LayoutInflater.from(parent.context).inflate(rowId, parent, false))
+            R.layout.row_two -> RowTwoViewHolder(LayoutInflater.from(parent.context).inflate(rowId, parent, false))
+            R.layout.row_three -> RowThreeViewHolder(LayoutInflater.from(parent.context).inflate(rowId, parent, false))
             else -> throw IllegalArgumentException("Type not supported $rowId")
         }
     }

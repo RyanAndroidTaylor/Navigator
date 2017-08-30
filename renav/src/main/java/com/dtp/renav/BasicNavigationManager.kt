@@ -16,7 +16,7 @@ class BasicNavigationManager(private var adapter: NavigationAdapter? = null) : N
 
     private lateinit var navigationView: NavigationView
 
-    override fun attachNavView(navView: NavigationView) {
+    override fun attachNavigationView(navView: NavigationView) {
         navigationView = navView
     }
 
@@ -53,13 +53,15 @@ class BasicNavigationManager(private var adapter: NavigationAdapter? = null) : N
     private fun bindCurrentColumn() {
         adapter?.let { adapter ->
             val rowId = adapter.getRowId(currentColumnId)
-            Log.i("BasicNavigationAdapter", "RowId $rowId")
-
             val viewHolder = viewPool.getRowViewHolder(rowId) ?: adapter.createRowViewHolderForId(navigationView.container, rowId)
+
+            currentRowViewHolder?.onDetach()
 
             currentRowViewHolder = viewHolder
 
             navigationView.attachColumnView(viewHolder.rootView)
+
+            currentRowViewHolder?.onAttach()
 
             adapter.bindColumnView(currentColumnId, viewHolder)
         }

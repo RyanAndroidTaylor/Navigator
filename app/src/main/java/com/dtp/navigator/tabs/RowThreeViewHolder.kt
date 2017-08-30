@@ -10,7 +10,7 @@ import com.dtp.renav.RowViewHolder
  */
 class RowThreeViewHolder(override val rootView: View) : RowViewHolder<String> {
 
-    val text: TextView = rootView.findViewById<TextView>(R.id.textView)
+    private val text: TextView = rootView.findViewById<TextView>(R.id.textView)
 
     override fun bind(item: String) {
         text.text = item

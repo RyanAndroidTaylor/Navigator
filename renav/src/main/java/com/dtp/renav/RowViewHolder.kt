@@ -9,4 +9,7 @@ interface RowViewHolder<in T> {
     val rootView: View
 
     fun bind(item: T)
+
+    fun onAttach()
+    fun onDetach()
 }

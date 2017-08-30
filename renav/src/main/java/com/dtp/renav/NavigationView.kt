@@ -45,7 +45,7 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
         set(value) {
             field = value
 
-            field?.attachNavView(this)
+            field?.attachNavigationView(this)
 
             selectColumn(initialTab)
         }
@@ -65,7 +65,7 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
 
             inflateMenu(typedArray.getResourceId(R.styleable.NavigationView_navigation_menu, -1))
 
-            initialTab = typedArray.getResourceId(R.styleable.NavigationView_default_column, columns[0].id)
+            initialTab = typedArray.getResourceId(R.styleable.NavigationView_default_column, if (columns.isNotEmpty()) columns[0].id else -1)
 
             selectedColor = typedArray.getColor(R.styleable.NavigationView_selected_color, selectedColor)
             unselectedColor = typedArray.getColor(R.styleable.NavigationView_unselected_color, unselectedColor)
@@ -154,7 +154,8 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
 
         container = getChildAt(0) as ViewGroup
 
-        initialTab.let { columnSelected(it) }
+        if (initialTab != -1)
+            columnSelected(initialTab)
     }
 
     fun handleBack(): Boolean = navigationManager?.handleBack() ?: false

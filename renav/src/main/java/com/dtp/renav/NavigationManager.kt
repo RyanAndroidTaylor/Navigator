@@ -5,7 +5,7 @@ package com.dtp.renav
  */
 interface NavigationManager {
 
-    fun attachNavView(navView: NavigationView)
+    fun attachNavigationView(navView: NavigationView)
 
     fun setAdapter(adapter: NavigationAdapter?)
 
