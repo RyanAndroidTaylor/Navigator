@@ -10,6 +10,6 @@ interface RowViewHolder<in T> {
 
     fun bind(item: T)
 
-    fun onAttach()
-    fun onDetach()
+    fun onAttach() {}
+    fun onDetach() {}
 }

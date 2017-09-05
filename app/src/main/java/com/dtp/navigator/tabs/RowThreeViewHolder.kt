@@ -9,7 +9,6 @@ import com.dtp.renav.RowViewHolder
  * Created by ner on 7/20/17.
  */
 class RowThreeViewHolder(override val rootView: View) : RowViewHolder<String> {
-
     private val text: TextView = rootView.findViewById<TextView>(R.id.textView)
 
     override fun bind(item: String) {
