@@ -1,7 +1,7 @@
 package com.dtp.navigator.rows
 
 import com.dtp.navigator.R
-import com.dtp.renav.SimpleNavigationAdapter.Row
+import com.dtp.renav.base.SimpleNavigationAdapter.Row
 
 /**
  * Created by ner on 8/27/17.

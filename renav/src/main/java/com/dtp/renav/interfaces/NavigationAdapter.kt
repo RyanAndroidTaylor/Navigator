@@ -1,6 +1,4 @@
-package com.dtp.renav
-
-import android.view.ViewGroup
+package com.dtp.renav.interfaces
 
 /**
  * Created by ner on 7/12/17.
@@ -8,7 +6,7 @@ import android.view.ViewGroup
 interface NavigationAdapter {
 
     fun getRowId(columnId: Int): Int
-    fun createRowViewHolderForId(parent: ViewGroup, rowId: Int): RowViewHolder<*>
+    fun createRowViewHolderForId(container: NavigatorContainer, rowId: Int): RowViewHolder<*>
     fun bindColumnView(columnId: Int, rowViewHolder: RowViewHolder<*>)
     fun handleBack(columnId: Int): Boolean
 }

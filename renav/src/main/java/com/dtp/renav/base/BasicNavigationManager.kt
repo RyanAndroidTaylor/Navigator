@@ -1,7 +1,11 @@
-package com.dtp.renav
+package com.dtp.renav.base
 
 import android.util.Log
-import com.dtp.renav.base.BaseColumnViewPool
+import com.dtp.renav.*
+import com.dtp.renav.interfaces.ColumnViewPool
+import com.dtp.renav.interfaces.NavigationAdapter
+import com.dtp.renav.interfaces.NavigationManager
+import com.dtp.renav.interfaces.RowViewHolder
 
 /**
  * Created by ner on 7/14/17.
@@ -55,11 +59,13 @@ class BasicNavigationManager(private var adapter: NavigationAdapter? = null) : N
             val rowId = adapter.getRowId(currentColumnId)
             val viewHolder = viewPool.getRowViewHolder(rowId) ?: adapter.createRowViewHolderForId(navigationView.container, rowId)
 
+            navigationView.detachCurrentRowViewHolder()
+
             currentRowViewHolder?.onDetach()
 
             currentRowViewHolder = viewHolder
 
-            navigationView.attachColumnView(viewHolder.rootView)
+            navigationView.attachRowViewHolder(viewHolder)
 
             currentRowViewHolder?.onAttach()
 

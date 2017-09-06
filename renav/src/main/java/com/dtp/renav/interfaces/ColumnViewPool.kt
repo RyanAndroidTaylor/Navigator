@@ -1,4 +1,4 @@
-package com.dtp.renav
+package com.dtp.renav.interfaces
 
 /**
  * Created by ner on 7/12/17.

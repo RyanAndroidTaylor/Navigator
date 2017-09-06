@@ -1,7 +1,7 @@
 package com.dtp.renav.base
 
-import com.dtp.renav.RowViewHolder
-import com.dtp.renav.ColumnViewPool
+import com.dtp.renav.interfaces.RowViewHolder
+import com.dtp.renav.interfaces.ColumnViewPool
 
 /**
  * Created by ner on 7/15/17.

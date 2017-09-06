@@ -1,5 +1,7 @@
-package com.dtp.renav
+package com.dtp.renav.base
 
+import com.dtp.renav.interfaces.NavigationAdapter
+import com.dtp.renav.interfaces.RowViewHolder
 import java.util.*
 
 /**

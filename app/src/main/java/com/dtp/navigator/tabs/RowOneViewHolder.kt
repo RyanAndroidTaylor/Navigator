@@ -3,7 +3,7 @@ package com.dtp.navigator.tabs
 import android.view.View
 import android.widget.TextView
 import com.dtp.navigator.R
-import com.dtp.renav.RowViewHolder
+import com.dtp.renav.interfaces.RowViewHolder
 
 /**
  * Created by ner on 7/20/17.

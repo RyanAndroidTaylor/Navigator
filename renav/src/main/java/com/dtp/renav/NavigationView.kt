@@ -15,12 +15,12 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import com.dtp.renav.interfaces.NavigationManager
+import com.dtp.renav.interfaces.NavigatorContainer
+import com.dtp.renav.interfaces.RowViewHolder
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 
-//TODO Notes
-// Would it be cool if we allowed user to chose where the navigation bar was (Top, Start, End or Bottom)
-// Do we create a styleable for changing the height of the navigation bar or do we in force the material design specs
 class NavigationView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : FrameLayout(context, attrs) {
 
     val ICON_SIZE = dpToPx(24)
@@ -38,7 +38,8 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
 
     private var columnWidth = 0
 
-    lateinit var container: ViewGroup
+    private lateinit var rootContainerView: ViewGroup
+    lateinit var container: NavigatorContainer
         private set
 
     var navigationManager: NavigationManager? = null
@@ -152,10 +153,23 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
 
         insureContainerIsCorrect()
 
-        container = getChildAt(0) as ViewGroup
+        rootContainerView = getChildAt(0) as ViewGroup
+
+        container.setRootContainerView(rootContainerView)
 
         if (initialTab != -1)
             columnSelected(initialTab)
+    }
+
+    private fun insureContainerIsCorrect() {
+        if (childCount > 1 || childCount < 1)
+            throw IllegalStateException("NavigationView must have only one child")
+        if (getChildAt(0) !is ViewGroup)
+            throw IllegalStateException("NavigationView child must be a ViewGroup")
+    }
+
+    fun attachContainer(container: NavigatorContainer) {
+        this.container = container
     }
 
     fun handleBack(): Boolean = navigationManager?.handleBack() ?: false
@@ -165,13 +179,6 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
         val childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(measureHeight - BOTTOM_BAR_HEIGHT, MeasureSpec.EXACTLY)
 
         getChildAt(0).measure(childWidthMeasureSpec, childHeightMeasureSpec)
-    }
-
-    private fun insureContainerIsCorrect() {
-        if (childCount > 1 || childCount < 1)
-            throw IllegalStateException("NavigationView must have only one child")
-        if (getChildAt(0) !is ViewGroup)
-            throw IllegalStateException("NavigationView child must be a ViewGroup")
     }
 
     private fun inflateMenu(menuId: Int) {
@@ -247,10 +254,12 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
             columnSelected(columnId)
     }
 
-    fun attachColumnView(view: View) {
-        container.removeAllViews()
+    fun detachCurrentRowViewHolder() {
+        container.detachCurrentViewHolder()
+    }
 
-        container.addView(view)
+    fun attachRowViewHolder(viewHolder: RowViewHolder<*>) {
+        container.attachViewHolder(viewHolder)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
