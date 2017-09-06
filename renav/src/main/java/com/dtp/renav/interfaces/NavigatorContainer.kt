@@ -5,11 +5,11 @@ import android.view.ViewGroup
 /**
  * Created by ner on 9/5/17.
  */
-interface NavigatorContainer<in VH: RowViewHolder<*>> {
+interface NavigatorContainer {
     fun setRootContainerView(view: ViewGroup)
     fun getRootContainerView(): ViewGroup
 
     fun detachCurrentViewHolder()
 
-    fun attachViewHolder(viewHolder: VH)
+    fun attachViewHolder(viewHolder: RowViewHolder<*>)
 }
