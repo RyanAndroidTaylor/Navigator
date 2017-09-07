@@ -17,7 +17,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.dtp.renav.interfaces.NavigationManager
 import com.dtp.renav.interfaces.NavigatorContainer
-import com.dtp.renav.interfaces.RowViewHolder
+import com.dtp.renav.interfaces.RowHolder
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 
@@ -258,8 +258,8 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
         container.detachCurrentViewHolder()
     }
 
-    fun attachRowViewHolder(viewHolder: RowViewHolder<*>) {
-        container.attachViewHolder(viewHolder)
+    fun attachRowViewHolder(holder: RowHolder<*>) {
+        container.attachViewHolder(holder)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {

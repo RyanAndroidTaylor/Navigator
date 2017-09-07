@@ -6,7 +6,7 @@ package com.dtp.renav.interfaces
 interface NavigationAdapter {
 
     fun getRowId(columnId: Int): Int
-    fun createRowViewHolderForId(container: NavigatorContainer, rowId: Int): RowViewHolder<*>
-    fun bindColumnView(columnId: Int, rowViewHolder: RowViewHolder<*>)
+    fun createRowViewHolderForId(container: NavigatorContainer, rowId: Int): RowHolder<*>
+    fun bindColumnView(columnId: Int, rowHolder: RowHolder<*>)
     fun handleBack(columnId: Int): Boolean
 }

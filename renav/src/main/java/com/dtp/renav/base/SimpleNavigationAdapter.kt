@@ -1,7 +1,7 @@
 package com.dtp.renav.base
 
 import com.dtp.renav.interfaces.NavigationAdapter
-import com.dtp.renav.interfaces.RowViewHolder
+import com.dtp.renav.interfaces.RowHolder
 import java.util.*
 
 /**
@@ -21,8 +21,8 @@ abstract class SimpleNavigationAdapter(columns: List<Column>) : NavigationAdapte
         return columnMap[columnId]?.rows?.peek()?.rowId ?: -1
     }
 
-    override fun bindColumnView(columnId: Int, rowViewHolder: RowViewHolder<*>) {
-        columnMap[columnId]?.rows?.peek()?.bind(rowViewHolder)
+    override fun bindColumnView(columnId: Int, rowHolder: RowHolder<*>) {
+        columnMap[columnId]?.rows?.peek()?.bind(rowHolder)
     }
 
     override fun handleBack(columnId: Int): Boolean {
@@ -49,8 +49,8 @@ abstract class SimpleNavigationAdapter(columns: List<Column>) : NavigationAdapte
         abstract val rowId: Int
 
         @Suppress("UNCHECKED_CAST")
-        fun bind(rowViewHolder: RowViewHolder<*>) {
-            (rowViewHolder as RowViewHolder<T>).bind(item)
+        fun bind(rowHolder: RowHolder<*>) {
+            (rowHolder as RowHolder<T>).bind(item)
         }
     }
 }

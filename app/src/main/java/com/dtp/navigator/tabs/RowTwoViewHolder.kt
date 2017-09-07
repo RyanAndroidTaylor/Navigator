@@ -1,14 +1,15 @@
 package com.dtp.navigator.tabs
 
-import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import com.dtp.navigator.R
-import com.dtp.renav.interfaces.RowViewHolder
+import com.dtp.renav.base.ViewRowHolder
+import com.dtp.renav.interfaces.RowHolder
 
 /**
  * Created by ner on 7/20/17.
  */
-class RowTwoViewHolder(override val rootView: View) : RowViewHolder<Long> {
+class RowTwoViewHolder(override val rootView: ViewGroup) : ViewRowHolder<Long> {
 
     private val text: TextView = rootView.findViewById(R.id.textView)
 

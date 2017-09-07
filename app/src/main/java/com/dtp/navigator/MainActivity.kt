@@ -7,8 +7,7 @@ import com.dtp.navigator.rows.RowThree
 import com.dtp.navigator.rows.RowTwo
 import com.dtp.renav.base.BasicNavigationManager
 import com.dtp.renav.NavigationView
-import com.dtp.renav.base.DefaultNavigatorContainer
-import com.dtp.renav.base.SimpleNavigationAdapter.Row
+import com.dtp.renav.base.ViewNavigatorContainer
 import com.dtp.renav.base.SimpleNavigationAdapter.Column
 
 class MainActivity : AppCompatActivity() {
@@ -25,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         navView = findViewById(R.id.nav_view)
 
-        navView.attachContainer(DefaultNavigatorContainer())
+        navView.attachContainer(ViewNavigatorContainer())
 
         val manager = BasicNavigationManager(MainNavigationAdapter(columns))
         navView.navigationManager = manager

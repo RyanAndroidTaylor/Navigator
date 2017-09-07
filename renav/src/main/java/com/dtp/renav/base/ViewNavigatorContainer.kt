@@ -2,12 +2,12 @@ package com.dtp.renav.base
 
 import android.view.ViewGroup
 import com.dtp.renav.interfaces.NavigatorContainer
-import com.dtp.renav.interfaces.RowViewHolder
+import com.dtp.renav.interfaces.RowHolder
 
 /**
  * Created by ner on 9/5/17.
  */
-class DefaultNavigatorContainer : NavigatorContainer {
+class ViewNavigatorContainer : NavigatorContainer {
     private lateinit var rootContainerView: ViewGroup
 
     override fun setRootContainerView(view: ViewGroup) {
@@ -22,7 +22,11 @@ class DefaultNavigatorContainer : NavigatorContainer {
         rootContainerView.removeAllViews()
     }
 
-    override fun attachViewHolder(viewHolder: RowViewHolder<*>) {
-        rootContainerView.addView(viewHolder.rootView)
+    override fun attachViewHolder(holder: RowHolder<*>) {
+        if (holder is ViewRowHolder<*>) {
+            rootContainerView.addView(holder.rootView)
+        } else {
+            throw IllegalArgumentException("RowHolder is not of type ViewRowHolder")
+        }
     }
 }

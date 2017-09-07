@@ -5,7 +5,7 @@ import com.dtp.renav.*
 import com.dtp.renav.interfaces.ColumnViewPool
 import com.dtp.renav.interfaces.NavigationAdapter
 import com.dtp.renav.interfaces.NavigationManager
-import com.dtp.renav.interfaces.RowViewHolder
+import com.dtp.renav.interfaces.RowHolder
 
 /**
  * Created by ner on 7/14/17.
@@ -16,7 +16,7 @@ class BasicNavigationManager(private var adapter: NavigationAdapter? = null) : N
 
     private var currentColumnId: Int = -1
 
-    private var currentRowViewHolder: RowViewHolder<*>? = null
+    private var currentRowHolder: RowHolder<*>? = null
 
     private lateinit var navigationView: NavigationView
 
@@ -30,8 +30,8 @@ class BasicNavigationManager(private var adapter: NavigationAdapter? = null) : N
 
     override fun columnSelected(columnId: Int) {
         adapter?.let { adapter ->
-            currentRowViewHolder?.let { rowViewHolder ->
-                currentRowViewHolder = null
+            currentRowHolder?.let { rowViewHolder ->
+                currentRowHolder = null
 
                 viewPool.putRowViewHolder(adapter.getRowId(currentColumnId), rowViewHolder)
             }
@@ -61,13 +61,13 @@ class BasicNavigationManager(private var adapter: NavigationAdapter? = null) : N
 
             navigationView.detachCurrentRowViewHolder()
 
-            currentRowViewHolder?.onDetach()
+            currentRowHolder?.onDetach()
 
-            currentRowViewHolder = viewHolder
+            currentRowHolder = viewHolder
 
             navigationView.attachRowViewHolder(viewHolder)
 
-            currentRowViewHolder?.onAttach()
+            currentRowHolder?.onAttach()
 
             adapter.bindColumnView(currentColumnId, viewHolder)
         }
