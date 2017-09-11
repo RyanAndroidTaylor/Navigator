@@ -2,10 +2,7 @@ package com.dtp.renav
 
 import android.content.Context
 import android.content.res.Resources
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.PorterDuff
-import android.graphics.Rect
+import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
@@ -15,18 +12,22 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import com.dtp.renav.base.ViewNavigationContainer
 import com.dtp.renav.interfaces.NavigationManager
-import com.dtp.renav.interfaces.NavigatorContainer
+import com.dtp.renav.interfaces.NavigationContainer
 import com.dtp.renav.interfaces.RowHolder
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 
 class NavigationView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : FrameLayout(context, attrs) {
 
-    val ICON_SIZE = dpToPx(24)
-    val BOTTOM_SPACING = dpToPx(10)
-    val BOTTOM_BAR_HEIGHT = dpToPx(56)
-    val MIN_COLUMN_WIDTH = dpToPx(80)
+    private val ICON_SIZE = dpToPx(24)
+    private val BOTTOM_SPACING = dpToPx(10)
+    private val BOTTOM_BAR_HEIGHT = dpToPx(56)
+    private val MIN_COLUMN_WIDTH = dpToPx(80)
+
+    private val backgroundPaint = Paint()
+    private val shadowPaint = Paint()
 
     private val textPaint: Paint
     private var selectedColor: Int
@@ -39,7 +40,8 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
     private var columnWidth = 0
 
     private lateinit var rootContainerView: ViewGroup
-    lateinit var container: NavigatorContainer
+
+    var container: NavigationContainer =  ViewNavigationContainer()
         private set
 
     var navigationManager: NavigationManager? = null
@@ -55,6 +57,13 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
 
     init {
         setWillNotDraw(false)
+
+        backgroundPaint.color = ContextCompat.getColor(context, R.color.nav_view_background)
+        backgroundPaint.style = Paint.Style.FILL
+
+        val shadow = ContextCompat.getColor(context, R.color.nav_view_shadow)
+
+        shadowPaint.shader = LinearGradient(0f, 0f, 0f, 20f, shadow, Color.TRANSPARENT, Shader.TileMode.MIRROR)
 
         val appAccentColor = TypedValue()
         context.theme.resolveAttribute(R.attr.colorAccent, appAccentColor, true)
@@ -119,6 +128,11 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
     }
 
     override fun onDraw(canvas: Canvas) {
+        val topOfBottomBar = height.toFloat() - BOTTOM_BAR_HEIGHT
+
+        canvas.drawRect(0f, topOfBottomBar, width.toFloat(), height.toFloat(), backgroundPaint)
+        canvas.drawRect(0f, topOfBottomBar - 15, width.toFloat(), topOfBottomBar, shadowPaint)
+
         columns.forEachIndexed { index, tab ->
             val textSize: Float
 
@@ -151,7 +165,7 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
-        insureContainerIsCorrect()
+        insureRootViewIsCorrect()
 
         rootContainerView = getChildAt(0) as ViewGroup
 
@@ -161,14 +175,14 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
             columnSelected(initialTab)
     }
 
-    private fun insureContainerIsCorrect() {
+    private fun insureRootViewIsCorrect() {
         if (childCount > 1 || childCount < 1)
             throw IllegalStateException("NavigationView must have only one child")
         if (getChildAt(0) !is ViewGroup)
             throw IllegalStateException("NavigationView child must be a ViewGroup")
     }
 
-    fun attachContainer(container: NavigatorContainer) {
+    fun attachContainer(container: NavigationContainer) {
         this.container = container
     }
 

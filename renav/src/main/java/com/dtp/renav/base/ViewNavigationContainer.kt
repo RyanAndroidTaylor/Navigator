@@ -1,13 +1,13 @@
 package com.dtp.renav.base
 
 import android.view.ViewGroup
-import com.dtp.renav.interfaces.NavigatorContainer
+import com.dtp.renav.interfaces.NavigationContainer
 import com.dtp.renav.interfaces.RowHolder
 
 /**
  * Created by ner on 9/5/17.
  */
-class ViewNavigatorContainer : NavigatorContainer {
+class ViewNavigationContainer : NavigationContainer {
     private lateinit var rootContainerView: ViewGroup
 
     override fun setRootContainerView(view: ViewGroup) {

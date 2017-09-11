@@ -15,11 +15,11 @@ import com.dtp.renav.base.SimpleNavigationAdapter
 class MainNavigationAdapter(columns: List<Column>) : SimpleNavigationAdapter(columns) {
 
 
-    override fun createRowViewHolderForId(container: NavigatorContainer, rowId: Int): RowHolder<*> {
+    override fun createRowViewHolderForId(layoutInflater: LayoutInflater, container: NavigatorContainer, rowId: Int): RowHolder<*> {
         return when (rowId) {
-            R.layout.row_one -> RowOneViewHolder(LayoutInflater.from(container.getRootContainerView().context).inflate(rowId, container.getRootContainerView(), false) as ViewGroup)
-            R.layout.row_two -> RowTwoViewHolder(LayoutInflater.from(container.getRootContainerView().context).inflate(rowId, container.getRootContainerView(), false) as ViewGroup)
-            R.layout.row_three -> RowThreeViewHolder(LayoutInflater.from(container.getRootContainerView().context).inflate(rowId, container.getRootContainerView(), false) as ViewGroup)
+            R.layout.row_one -> RowOneViewHolder(layoutInflater.inflate(rowId, container.getRootContainerView(), false) as ViewGroup)
+            R.layout.row_two -> RowTwoViewHolder(layoutInflater.inflate(rowId, container.getRootContainerView(), false) as ViewGroup)
+            R.layout.row_three -> RowThreeViewHolder(layoutInflater.inflate(rowId, container.getRootContainerView(), false) as ViewGroup)
             else -> throw IllegalArgumentException("Type not supported $rowId")
         }
     }

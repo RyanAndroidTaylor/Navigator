@@ -1,8 +1,9 @@
 package com.dtp.renav.base
 
 import android.util.Log
-import com.dtp.renav.*
-import com.dtp.renav.interfaces.ColumnViewPool
+import android.view.LayoutInflater
+import com.dtp.renav.NavigationView
+import com.dtp.renav.interfaces.RowHolderPool
 import com.dtp.renav.interfaces.NavigationAdapter
 import com.dtp.renav.interfaces.NavigationManager
 import com.dtp.renav.interfaces.RowHolder
@@ -10,9 +11,9 @@ import com.dtp.renav.interfaces.RowHolder
 /**
  * Created by ner on 7/14/17.
  */
-class BasicNavigationManager(private var adapter: NavigationAdapter? = null) : NavigationManager {
+class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : NavigationManager {
 
-    private val viewPool: ColumnViewPool by lazy { BaseColumnViewPool() }
+    private val viewPool: RowHolderPool by lazy { SimpleRowHolderPool() }
 
     private var currentColumnId: Int = -1
 
@@ -57,7 +58,12 @@ class BasicNavigationManager(private var adapter: NavigationAdapter? = null) : N
     private fun bindCurrentColumn() {
         adapter?.let { adapter ->
             val rowId = adapter.getRowId(currentColumnId)
-            val viewHolder = viewPool.getRowViewHolder(rowId) ?: adapter.createRowViewHolderForId(navigationView.container, rowId)
+
+            val viewHolder = viewPool.getRowViewHolder(rowId) ?: let {
+                val layoutInflater = LayoutInflater.from(navigationView.context)
+
+                adapter.createRowViewHolderForId(layoutInflater, navigationView.container, rowId)
+            }
 
             navigationView.detachCurrentRowViewHolder()
 

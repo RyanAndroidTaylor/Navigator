@@ -26,22 +26,23 @@ abstract class SimpleNavigationAdapter(columns: List<Column>) : NavigationAdapte
     }
 
     override fun handleBack(columnId: Int): Boolean {
-        return columnMap[columnId]?.rows?.let { rows ->
-            if (rows.size > 1) {
-                rows.pop()
-
-                true
-            } else {
-                false
-            }
-        } ?: false
+        return columnMap[columnId]?.handleBackPressed() ?: false
     }
 
-    class Column(val columnId: Int, vararg rows: Row<*>) {
+    class Column(val columnId: Int, rootRow: Row<*>) {
         val rows = Stack<Row<*>>()
 
         init {
-            rows.forEach { this.rows.push(it) }
+            rows.push(rootRow)
+        }
+
+        open fun handleBackPressed(): Boolean {
+            return if (rows.size > 1) {
+                rows.pop()
+
+                true
+            } else
+                false
         }
     }
 

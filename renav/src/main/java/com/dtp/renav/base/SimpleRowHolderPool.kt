@@ -1,12 +1,12 @@
 package com.dtp.renav.base
 
 import com.dtp.renav.interfaces.RowHolder
-import com.dtp.renav.interfaces.ColumnViewPool
+import com.dtp.renav.interfaces.RowHolderPool
 
 /**
  * Created by ner on 7/15/17.
  */
-class BaseColumnViewPool : ColumnViewPool {
+class SimpleRowHolderPool : RowHolderPool {
 
     private val rowViewHolders = mutableMapOf<Int, RowHolder<*>>()
 
