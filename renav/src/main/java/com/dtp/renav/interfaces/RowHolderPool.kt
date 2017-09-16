@@ -7,4 +7,6 @@ interface RowHolderPool {
 
     fun getRowViewHolder(rowId: Int): RowHolder<*>?
     fun putRowViewHolder(rowId: Int, rowHolder: RowHolder<*>)
+
+    fun destroyRowHolders()
 }

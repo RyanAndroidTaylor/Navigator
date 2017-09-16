@@ -175,6 +175,18 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
             columnSelected(initialTab)
     }
 
+    fun onPause() {
+        navigationManager?.onPause()
+    }
+
+    fun onResume() {
+        navigationManager?.onResume()
+    }
+
+    fun onDestroy() {
+        navigationManager?.onDestroy()
+    }
+
     private fun insureRootViewIsCorrect() {
         if (childCount > 1 || childCount < 1)
             throw IllegalStateException("NavigationView must have only one child")

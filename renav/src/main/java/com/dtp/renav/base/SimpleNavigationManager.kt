@@ -3,17 +3,17 @@ package com.dtp.renav.base
 import android.util.Log
 import android.view.LayoutInflater
 import com.dtp.renav.NavigationView
-import com.dtp.renav.interfaces.RowHolderPool
 import com.dtp.renav.interfaces.NavigationAdapter
 import com.dtp.renav.interfaces.NavigationManager
 import com.dtp.renav.interfaces.RowHolder
+import com.dtp.renav.interfaces.RowHolderPool
 
 /**
  * Created by ner on 7/14/17.
  */
 class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : NavigationManager {
 
-    private val viewPool: RowHolderPool by lazy { SimpleRowHolderPool() }
+    private val rowHolderPool: RowHolderPool by lazy { SimpleRowHolderPool() }
 
     private var currentColumnId: Int = -1
 
@@ -34,7 +34,7 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
             currentRowHolder?.let { rowViewHolder ->
                 currentRowHolder = null
 
-                viewPool.putRowViewHolder(adapter.getRowId(currentColumnId), rowViewHolder)
+                rowHolderPool.putRowViewHolder(adapter.getRowId(currentColumnId), rowViewHolder)
             }
 
             currentColumnId = columnId
@@ -42,6 +42,21 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
             bindCurrentColumn()
         } ?: Log.i("BasicNavigationManager", "Column selected but no adapter was found.")
     }
+
+    override fun onResume() {
+        currentRowHolder?.onResume()
+    }
+
+    override fun onPause() {
+        currentRowHolder?.onPause()
+    }
+
+    override fun onDestroy() {
+        currentRowHolder?.onDestroy()
+
+        rowHolderPool.destroyRowHolders()
+    }
+
 
     override fun handleBack(): Boolean {
         return adapter?.let { adapter ->
@@ -59,11 +74,13 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
         adapter?.let { adapter ->
             val rowId = adapter.getRowId(currentColumnId)
 
-            val viewHolder = viewPool.getRowViewHolder(rowId) ?: let {
+            val viewHolder = rowHolderPool.getRowViewHolder(rowId) ?: let {
                 val layoutInflater = LayoutInflater.from(navigationView.context)
 
                 adapter.createRowViewHolderForId(layoutInflater, navigationView.container, rowId)
             }
+
+            currentRowHolder?.onPause()
 
             navigationView.detachCurrentRowViewHolder()
 
@@ -72,6 +89,8 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
             currentRowHolder = viewHolder
 
             navigationView.attachRowViewHolder(viewHolder)
+
+            currentRowHolder?.onResume()
 
             currentRowHolder?.onAttach()
 

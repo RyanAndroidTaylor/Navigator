@@ -21,4 +21,10 @@ class SimpleRowHolderPool : RowHolderPool {
         if (!rowViewHolders.containsKey(rowId))
             rowViewHolders.put(rowId, rowHolder)
     }
+
+    override fun destroyRowHolders() {
+        rowViewHolders.values.forEach { it.onDestroy() }
+
+        rowViewHolders.clear()
+    }
 }

@@ -8,4 +8,8 @@ interface RowHolder<in T> {
 
     fun onAttach() {}
     fun onDetach() {}
+
+    fun onResume() {}
+    fun onPause() {}
+    fun onDestroy() {}
 }

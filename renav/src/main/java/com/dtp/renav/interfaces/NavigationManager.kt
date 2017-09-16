@@ -13,5 +13,9 @@ interface NavigationManager {
 
     fun columnSelected(columnId: Int)
 
+    fun onResume()
+    fun onPause()
+    fun onDestroy()
+
     fun handleBack(): Boolean
 }
