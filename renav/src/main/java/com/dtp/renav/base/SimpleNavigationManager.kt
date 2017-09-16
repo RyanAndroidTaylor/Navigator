@@ -1,5 +1,6 @@
 package com.dtp.renav.base
 
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import com.dtp.renav.NavigationView
@@ -57,6 +58,25 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
         rowHolderPool.destroyRowHolders()
     }
 
+    override fun pushRowToCurrentColumn(row: SimpleNavigationAdapter.Row<*>) {
+        adapter?.pushRowToCurrentColumn(currentColumnId, row)
+
+        bindCurrentColumn()
+    }
+
+    override fun popCurrentRowColumn() {
+        adapter?.popColumnRow(currentColumnId)
+
+        bindCurrentColumn()
+    }
+
+    override fun startActivityForResult(intent: Intent, requestCode: Int) {
+        navigationView.startActivityForResult(intent, requestCode)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        currentRowHolder?.onActivityResult(requestCode, resultCode, data)
+    }
 
     override fun handleBack(): Boolean {
         return adapter?.let { adapter ->
@@ -92,7 +112,7 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
 
             currentRowHolder?.onResume()
 
-            currentRowHolder?.onAttach()
+            currentRowHolder?.onAttach(this)
 
             adapter.bindColumnView(currentColumnId, viewHolder)
         }

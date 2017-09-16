@@ -25,6 +25,14 @@ abstract class SimpleNavigationAdapter(columns: List<Column>) : NavigationAdapte
         columnMap[columnId]?.rows?.peek()?.bind(rowHolder)
     }
 
+    override fun pushRowToCurrentColumn(columnId: Int, row: Row<*>) {
+        columnMap[columnId]?.rows?.push(row)
+    }
+
+    override fun popColumnRow(columnId: Int) {
+        columnMap[columnId]?.rows?.pop()
+    }
+
     override fun handleBack(columnId: Int): Boolean {
         return columnMap[columnId]?.handleBackPressed() ?: false
     }

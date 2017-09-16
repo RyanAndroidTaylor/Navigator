@@ -1,10 +1,12 @@
 package com.dtp.renav
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.util.Xml
@@ -13,8 +15,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.dtp.renav.base.ViewNavigationContainer
-import com.dtp.renav.interfaces.NavigationManager
 import com.dtp.renav.interfaces.NavigationContainer
+import com.dtp.renav.interfaces.NavigationManager
 import com.dtp.renav.interfaces.RowHolder
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
@@ -33,6 +35,8 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
     private var selectedColor: Int
     private var unselectedColor: Int = ContextCompat.getColor(context, R.color.text_black)
 
+    protected var activity: AppCompatActivity? = null
+
     private val columns = mutableListOf<Column>()
 
     private val tabRect = Rect()
@@ -41,7 +45,7 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
 
     private lateinit var rootContainerView: ViewGroup
 
-    var container: NavigationContainer =  ViewNavigationContainer()
+    var container: NavigationContainer = ViewNavigationContainer()
         private set
 
     var navigationManager: NavigationManager? = null
@@ -165,6 +169,9 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
+        if (context is AppCompatActivity)
+            activity = context as AppCompatActivity
+
         insureRootViewIsCorrect()
 
         rootContainerView = getChildAt(0) as ViewGroup
@@ -173,6 +180,20 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
 
         if (initialTab != -1)
             columnSelected(initialTab)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+
+        activity = null
+    }
+
+    fun startActivityForResult(intent: Intent, requestCode: Int) {
+        activity?.startActivityForResult(intent, requestCode)
+    }
+
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        navigationManager?.onActivityResult(requestCode, resultCode, data)
     }
 
     fun onPause() {
