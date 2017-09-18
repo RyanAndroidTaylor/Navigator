@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.text.TextPaint
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.util.Xml
@@ -35,7 +36,7 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
     private val backgroundPaint = Paint()
     private val shadowPaint = Paint()
 
-    private val textPaint: Paint
+    private val textPaint = TextPaint()
     private var selectedColor: Int
     private var unselectedColor: Int = ContextCompat.getColor(context, R.color.text_black)
 
@@ -90,8 +91,6 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
 
             typedArray.recycle()
         }
-
-        textPaint = Paint(unselectedColor)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
