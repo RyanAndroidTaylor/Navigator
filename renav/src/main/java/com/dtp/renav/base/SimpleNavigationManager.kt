@@ -1,8 +1,10 @@
 package com.dtp.renav.base
 
 import android.content.Intent
+import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import com.dtp.renav.NavigationView
 import com.dtp.renav.interfaces.NavigationAdapter
 import com.dtp.renav.interfaces.NavigationManager
@@ -70,11 +72,32 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
         bindCurrentColumn()
     }
 
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean = currentRowHolder?.onOptionsItemSelected(item) == true
+
+    override fun setSupportActionBar(toolbar: Toolbar) {
+        navigationView.setSupportActionBar(toolbar)
+    }
+
+    override fun setDisplayHomeAsUpEnabled(enabled: Boolean) {
+        navigationView.setDisplayHomeAsUpEnabled(enabled)
+    }
+
+    override fun checkPermission(permission: String): Boolean =
+            navigationView.checkPermission(permission)
+
+    override fun requestPermission(requestCode: Int, permissions: Array<String>) =
+            navigationView.requestPermission(requestCode, permissions)
+
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        currentRowHolder?.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
     override fun startActivityForResult(intent: Intent, requestCode: Int) {
         navigationView.startActivityForResult(intent, requestCode)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         currentRowHolder?.onActivityResult(requestCode, resultCode, data)
     }
 

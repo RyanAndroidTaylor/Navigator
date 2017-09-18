@@ -2,14 +2,18 @@ package com.dtp.renav
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.Drawable
+import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.util.Xml
+import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -188,12 +192,33 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
         activity = null
     }
 
+    fun onOptionsItemSelected(item: MenuItem?): Boolean = navigationManager?.onOptionsItemSelected(item) == true
+
+    fun setSupportActionBar(toolbar: Toolbar) {
+        activity?.setSupportActionBar(toolbar)
+    }
+
+    fun setDisplayHomeAsUpEnabled(enabled: Boolean) {
+        activity?.supportActionBar?.setDisplayHomeAsUpEnabled(enabled)
+    }
+
+    fun checkPermission(permission: String): Boolean =
+            ActivityCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+
+    fun requestPermission(requestCode: Int, permissions: Array<out String>) {
+        activity?.let { ActivityCompat.requestPermissions(it, permissions, requestCode) }
+    }
+
     fun startActivityForResult(intent: Intent, requestCode: Int) {
         activity?.startActivityForResult(intent, requestCode)
     }
 
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         navigationManager?.onActivityResult(requestCode, resultCode, data)
+    }
+
+    fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        navigationManager?.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     fun onPause() {
