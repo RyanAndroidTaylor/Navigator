@@ -1,13 +1,191 @@
 package com.dtp.renav
 
 import android.content.Context
+import android.content.res.Resources
+import android.graphics.*
+import android.graphics.drawable.Drawable
+import android.support.v4.content.ContextCompat
+import android.text.TextPaint
 import android.util.AttributeSet
+import android.util.TypedValue
+import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import com.dtp.renav.interfaces.NavigationManager
 
 /**
  * Created by ner on 9/16/17.
  */
 class NavigationBar @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
-    //TODO We need to make the nav bar a child of NavigationView so it can be drawn on top of the container.
-    // Right now the shadow of the navigation bar is drawn behind the container
+
+    private val backgroundPaint = Paint()
+    private val shadowPaint = Paint()
+
+    private var selectedColor: Int
+    private var unselectedColor: Int = ContextCompat.getColor(context, R.color.text_black)
+
+    private val textPaint = TextPaint()
+
+    private val columns = mutableListOf<Column>()
+
+    private var initialTab: Int = -1
+
+    private val tabRect = Rect()
+
+    var columnWidth = 0
+        private set
+
+    var navigationManager: NavigationManager? = null
+
+    init {
+        layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT)
+        (layoutParams as FrameLayout.LayoutParams).gravity = Gravity.BOTTOM
+
+        backgroundPaint.color = ContextCompat.getColor(context, R.color.nav_view_background)
+        backgroundPaint.style = Paint.Style.FILL
+
+        val shadow = ContextCompat.getColor(context, R.color.nav_view_shadow)
+
+        shadowPaint.shader = LinearGradient(0f, BOTTOM_BAR_SHADOW_HEIGHT.toFloat(), 0f, 0f, shadow, Color.TRANSPARENT, Shader.TileMode.CLAMP)
+
+        val appAccentColor = TypedValue()
+        context.theme.resolveAttribute(R.attr.colorAccent, appAccentColor, true)
+
+        selectedColor = appAccentColor.data
+    }
+
+    fun setInitialValues(initialTab: Int, selectedColor: Int, unselectedColor: Int) {
+        if (initialTab != -1)
+            this.initialTab = initialTab
+        if (selectedColor != -1)
+            this.selectedColor = selectedColor
+        if (unselectedColor != -1)
+            this.unselectedColor = unselectedColor
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val widthMode = View.MeasureSpec.getMode(widthMeasureSpec)
+        val measureWidth = View.MeasureSpec.getSize(widthMeasureSpec)
+        val heightMode = View.MeasureSpec.getMode(heightMeasureSpec)
+        val measureHeight = View.MeasureSpec.getSize(heightMeasureSpec)
+
+        val wrapContentWidth = columns.size * MIN_COLUMN_WIDTH
+
+        val width = when (widthMode) {
+            View.MeasureSpec.UNSPECIFIED -> {
+                measureWidth
+            }
+            View.MeasureSpec.AT_MOST -> {
+                Math.min(widthMode, wrapContentWidth)
+            }
+            View.MeasureSpec.EXACTLY -> measureWidth
+            else -> measureWidth
+        }
+
+        val height = BOTTOM_BAR_HEIGHT + BOTTOM_BAR_SHADOW_HEIGHT
+
+        columnWidth = width / columns.size
+
+        columns.forEachIndexed { index, tab ->
+            tab.bounds.set(columnWidth * index, 0, columnWidth * (index + 1), BOTTOM_BAR_HEIGHT)
+        }
+
+        setMeasuredDimension(width, height)
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        val topOfBottomBar = height.toFloat() - BOTTOM_BAR_HEIGHT - BOTTOM_BAR_SHADOW_HEIGHT
+
+        canvas.drawRect(0f, topOfBottomBar + BOTTOM_BAR_SHADOW_HEIGHT, width.toFloat(), height.toFloat(), backgroundPaint)
+        canvas.drawRect(0f, topOfBottomBar, width.toFloat(), topOfBottomBar + BOTTOM_BAR_SHADOW_HEIGHT, shadowPaint)
+
+        columns.forEachIndexed { index, tab ->
+            val textSize: Float
+
+            if (tab.isSelected) {
+                tab.icon.setColorFilter(selectedColor, PorterDuff.Mode.SRC_IN)
+                textPaint.color = selectedColor
+                textSize = spToPx(14)
+            } else {
+                tab.icon.setColorFilter(unselectedColor, PorterDuff.Mode.SRC_IN)
+                textPaint.color = unselectedColor
+                textSize = spToPx(12)
+            }
+
+            textPaint.textSize = textSize
+
+            val textWidth = textPaint.measureText(tab.title)
+
+            canvas.drawText(tab.title, (index * columnWidth) + (columnWidth / 2) - (textWidth / 2), height - BOTTOM_SPACING.toFloat(), textPaint)
+
+            val left = (index * columnWidth) + (columnWidth / 2) - (ICON_SIZE / 2)
+            val top = height - BOTTOM_SPACING - ICON_SIZE - textSize.toInt()
+
+            tabRect.set(left, top, left + ICON_SIZE, top + ICON_SIZE)
+            tab.icon.bounds = tabRect
+
+            tab.icon.draw(canvas)
+        }
+    }
+
+    override fun setBackgroundColor(color: Int) {
+        backgroundPaint.color = color
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+
+        if (initialTab != -1)
+            columnSelected(initialTab)
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            columns.forEach {
+                if (it.bounds.contains(event.x.toInt(), event.y.toInt())) {
+                    columnSelected(it.id)
+
+                    return true
+                }
+            }
+        }
+
+        return false
+    }
+
+    fun setSelectedColor(color: Int) {
+        selectedColor = color
+    }
+
+    fun setUnselectedColor(color: Int) {
+        unselectedColor = color
+    }
+
+    fun addColumn(itemId: Int, title: String, iconId: Int) {
+        try {
+            val drawable = ContextCompat.getDrawable(context, iconId).mutate()
+
+            columns.add(Column(itemId, title, drawable))
+        } catch (exception: Resources.NotFoundException) {
+            throw Resources.NotFoundException("Invalid resource ID for tab at index ${columns.size}")
+        }
+    }
+
+    fun columnSelected(columnId: Int) {
+        columns.forEach {
+            it.isSelected = it.id == columnId
+        }
+
+        navigationManager?.columnSelected(columnId)
+
+        invalidate()
+    }
+
+    class Column(val id: Int, val title: String, val icon: Drawable) {
+        val bounds = Rect(0, 0, 0, 0)
+
+        var isSelected = false
+    }
 }
