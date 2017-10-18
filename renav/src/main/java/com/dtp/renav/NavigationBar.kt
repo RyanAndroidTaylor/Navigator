@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.VectorDrawable
+import android.support.graphics.drawable.VectorDrawableCompat
 import android.support.v4.content.ContextCompat
 import android.text.TextPaint
 import android.util.AttributeSet
@@ -11,13 +13,14 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.dtp.renav.interfaces.NavigationManager
 
 /**
  * Created by ner on 9/16/17.
  */
+// I pulled this out of the NavigationView because I was running into problems where the shadow of this view was being drawn bellow the container view.
+// Now this view is added to the NavigationView after it's container view so it will be rendered on top of the container.
 class NavigationBar @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
 
     private val backgroundPaint = Paint()
@@ -68,8 +71,6 @@ class NavigationBar @JvmOverloads constructor(context: Context, attrs: Attribute
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val widthMode = View.MeasureSpec.getMode(widthMeasureSpec)
         val measureWidth = View.MeasureSpec.getSize(widthMeasureSpec)
-        val heightMode = View.MeasureSpec.getMode(heightMeasureSpec)
-        val measureHeight = View.MeasureSpec.getSize(heightMeasureSpec)
 
         val wrapContentWidth = columns.size * MIN_COLUMN_WIDTH
 
@@ -165,9 +166,9 @@ class NavigationBar @JvmOverloads constructor(context: Context, attrs: Attribute
 
     fun addColumn(itemId: Int, title: String, iconId: Int) {
         try {
-            val drawable = ContextCompat.getDrawable(context, iconId).mutate()
+            val drawable = VectorDrawableCompat.create(context.resources, iconId, null)
 
-            columns.add(Column(itemId, title, drawable))
+            columns.add(Column(itemId, title, drawable!!))
         } catch (exception: Resources.NotFoundException) {
             throw Resources.NotFoundException("Invalid resource ID for tab at index ${columns.size}")
         }
@@ -183,7 +184,7 @@ class NavigationBar @JvmOverloads constructor(context: Context, attrs: Attribute
         invalidate()
     }
 
-    class Column(val id: Int, val title: String, val icon: Drawable) {
+    class Column(val id: Int, val title: String, val icon: VectorDrawableCompat) {
         val bounds = Rect(0, 0, 0, 0)
 
         var isSelected = false
