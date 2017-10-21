@@ -21,8 +21,8 @@ interface NavigationManager {
     fun onPause()
     fun onDestroy()
 
-    fun pushRowToCurrentColumn(row: Row<*>)
-    fun popCurrentRowColumn()
+    fun pushRow(row: Row<*>)
+    fun popRow()
 
     fun onOptionsItemSelected(item: MenuItem?): Boolean
 

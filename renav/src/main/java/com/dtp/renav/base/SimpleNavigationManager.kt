@@ -55,19 +55,21 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
     }
 
     override fun onDestroy() {
+        currentRowHolder?.onDetach()
+
         currentRowHolder?.onDestroy()
 
         rowHolderPool.destroyRowHolders()
     }
 
-    override fun pushRowToCurrentColumn(row: SimpleNavigationAdapter.Row<*>) {
-        adapter?.pushRowToCurrentColumn(currentColumnId, row)
+    override fun pushRow(row: SimpleNavigationAdapter.Row<*>) {
+        adapter?.pushRow(currentColumnId, row)
 
         bindCurrentColumn()
     }
 
-    override fun popCurrentRowColumn() {
-        adapter?.popColumnRow(currentColumnId)
+    override fun popRow() {
+        adapter?.popRow(currentColumnId)
 
         bindCurrentColumn()
     }

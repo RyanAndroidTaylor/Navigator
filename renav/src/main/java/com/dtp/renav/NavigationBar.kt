@@ -23,6 +23,9 @@ import com.dtp.renav.interfaces.NavigationManager
 // Now this view is added to the NavigationView after it's container view so it will be rendered on top of the container.
 class NavigationBar @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
 
+    private val selectedTextHight = 14
+    private val normalTextHight = 12
+
     private val backgroundPaint = Paint()
     private val shadowPaint = Paint()
 
@@ -37,8 +40,7 @@ class NavigationBar @JvmOverloads constructor(context: Context, attrs: Attribute
 
     private val tabRect = Rect()
 
-    var columnWidth = 0
-        private set
+    private var columnWidth = 0
 
     var navigationManager: NavigationManager? = null
 
@@ -108,11 +110,11 @@ class NavigationBar @JvmOverloads constructor(context: Context, attrs: Attribute
             if (tab.isSelected) {
                 tab.icon.setColorFilter(selectedColor, PorterDuff.Mode.SRC_IN)
                 textPaint.color = selectedColor
-                textSize = spToPx(14)
+                textSize = spToPx(selectedTextHight)
             } else {
                 tab.icon.setColorFilter(unselectedColor, PorterDuff.Mode.SRC_IN)
                 textPaint.color = unselectedColor
-                textSize = spToPx(12)
+                textSize = spToPx(normalTextHight)
             }
 
             textPaint.textSize = textSize

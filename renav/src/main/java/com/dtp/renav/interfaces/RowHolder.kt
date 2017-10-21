@@ -18,8 +18,8 @@ interface RowHolder<in T> {
     fun onPause() {}
     fun onDestroy() {}
 
-    fun pushRowToCurrentColumn(row: Row<*>)
-    fun popCurrentColumnRow()
+    fun pushRow(row: Row<*>)
+    fun popRow()
 
     fun onOptionsItemSelected(item: MenuItem?): Boolean
 

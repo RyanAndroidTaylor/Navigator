@@ -28,12 +28,12 @@ abstract class ViewRowHolder<in T> : RowHolder<T> {
         navigationManager = null
     }
 
-    override fun pushRowToCurrentColumn(row: SimpleNavigationAdapter.Row<*>) {
-        navigationManager?.pushRowToCurrentColumn(row)
+    override fun pushRow(row: SimpleNavigationAdapter.Row<*>) {
+        navigationManager?.pushRow(row)
     }
 
-    override fun popCurrentColumnRow() {
-        navigationManager?.popCurrentRowColumn()
+    override fun popRow() {
+        navigationManager?.popRow()
     }
 
     override fun setSupportActionBar(toolbar: Toolbar) {

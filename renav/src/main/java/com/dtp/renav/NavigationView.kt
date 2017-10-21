@@ -73,6 +73,10 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
 
         if (context is AppCompatActivity)
             activity = context as AppCompatActivity
+        else
+        //TODO We should not require them to use and AppCompatActivity but if they do we should warn them that some features will not be available.
+        // When we make the switch to supporting normal Activities this will need to be tested well.
+            throw IllegalStateException("Attaching to an Activity that does not extend AppCompatActivity. Activities that use this view must extend AppCompatActivity")
 
         addView(navigationBar)
 
@@ -84,6 +88,8 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
     }
 
     override fun onDetachedFromWindow() {
+        navigationManager?.onDestroy()
+
         super.onDetachedFromWindow()
 
         activity = null
@@ -91,6 +97,8 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
 
     private fun insureRootViewIsCorrect() {
         if (childCount > 2 || childCount < 2)
+        // The second view is the NavigationBar and we add it when this view is created so we can guarantee
+        // the second view is a NavigationBar if there are only 2 child views.
             throw IllegalStateException("NavigationView must have only one child")
         if (getChildAt(0) !is ViewGroup)
             throw IllegalStateException("NavigationView child must be a ViewGroup")
