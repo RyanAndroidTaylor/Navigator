@@ -34,12 +34,6 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
 
     override fun columnSelected(columnId: Int) {
         adapter?.let { adapter ->
-            currentRowHolder?.let { rowViewHolder ->
-                currentRowHolder = null
-
-                rowHolderPool.putRowViewHolder(adapter.getRowId(currentColumnId), rowViewHolder)
-            }
-
             currentColumnId = columnId
 
             bindCurrentColumn()
@@ -119,17 +113,22 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
         adapter?.let { adapter ->
             val rowId = adapter.getRowId(currentColumnId)
 
+            currentRowHolder?.let { rowViewHolder ->
+
+                currentRowHolder?.onPause()
+
+                currentRowHolder?.onDetach()
+
+                navigationView.detachCurrentRowViewHolder()
+
+                rowHolderPool.putRowViewHolder(adapter.getRowId(currentColumnId), rowViewHolder)
+            }
+
             val viewHolder = rowHolderPool.getRowViewHolder(rowId) ?: let {
                 val layoutInflater = LayoutInflater.from(navigationView.context)
 
                 adapter.createRowViewHolderForId(layoutInflater, navigationView.container, rowId)
             }
-
-            currentRowHolder?.onPause()
-
-            navigationView.detachCurrentRowViewHolder()
-
-            currentRowHolder?.onDetach()
 
             currentRowHolder = viewHolder
 
