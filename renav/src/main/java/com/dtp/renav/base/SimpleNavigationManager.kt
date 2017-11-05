@@ -17,12 +17,15 @@ import com.dtp.renav.interfaces.RowHolderPool
 class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : NavigationManager {
 
     private val rowHolderPool: RowHolderPool by lazy { SimpleRowHolderPool() }
+    private val rowHolderStack: RowHolderStack by lazy { RowHolderStack() }
 
     private var currentColumnId: Int = -1
 
     private var currentRowHolder: RowHolder<*>? = null
 
     private lateinit var navigationView: NavigationView
+
+    override var shouldRecycleViews: Boolean = true
 
     override fun attachNavigationView(navView: NavigationView) {
         navigationView = navView
@@ -33,6 +36,7 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
     }
 
     override fun columnSelected(columnId: Int) {
+        Log.i("SimpleNavigationManager", "Colum selected $columnId")
         adapter?.let { adapter ->
             currentColumnId = columnId
 
@@ -57,15 +61,30 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
     }
 
     override fun pushRow(row: SimpleNavigationAdapter.Row<*>) {
-        adapter?.pushRow(currentColumnId, row)
+        adapter?.let { adapter ->
+            adapter.pushRow(currentColumnId, row)
 
-        bindCurrentColumn()
+            if (!shouldRecycleViews) {
+                val layoutInflater = LayoutInflater.from(navigationView.context)
+
+                val rowHolder = adapter.createRowViewHolderForId(layoutInflater, navigationView.container, row.rowId)
+
+                rowHolderStack.push(currentColumnId, rowHolder)
+            }
+
+            bindCurrentColumn()
+        }
     }
 
     override fun popRow() {
-        adapter?.popRow(currentColumnId)
+        adapter?.let { adapter ->
+            adapter.popRow(currentColumnId)
 
-        bindCurrentColumn()
+            if (!shouldRecycleViews)
+                rowHolderStack.pop(currentColumnId)
+
+            bindCurrentColumn()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean = currentRowHolder?.onOptionsItemSelected(item) == true
@@ -121,13 +140,26 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
 
                 navigationView.detachCurrentRowViewHolder()
 
-                rowHolderPool.putRowViewHolder(adapter.getRowId(currentColumnId), rowViewHolder)
+                if (shouldRecycleViews)
+                    rowHolderPool.putRowViewHolder(adapter.getRowId(currentColumnId), rowViewHolder)
             }
 
-            val viewHolder = rowHolderPool.getRowViewHolder(rowId) ?: let {
-                val layoutInflater = LayoutInflater.from(navigationView.context)
+            val viewHolder: RowHolder<*> = if (shouldRecycleViews) {
+                rowHolderPool.getRowViewHolder(rowId) ?: let {
+                    val layoutInflater = LayoutInflater.from(navigationView.context)
 
-                adapter.createRowViewHolderForId(layoutInflater, navigationView.container, rowId)
+                    adapter.createRowViewHolderForId(layoutInflater, navigationView.container, rowId)
+                }
+            } else {
+                rowHolderStack.peek(currentColumnId) ?: let {
+                    val layoutInflater = LayoutInflater.from(navigationView.context)
+
+                    val rowHolder = adapter.createRowViewHolderForId(layoutInflater, navigationView.container, rowId)
+
+                    rowHolderStack.push(currentColumnId, rowHolder)
+
+                    rowHolder
+                }
             }
 
             currentRowHolder = viewHolder

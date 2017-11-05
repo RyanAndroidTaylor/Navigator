@@ -11,6 +11,8 @@ import com.dtp.renav.base.SimpleNavigationAdapter.Row
  */
 interface NavigationManager {
 
+    var shouldRecycleViews: Boolean
+
     fun attachNavigationView(navView: NavigationView)
 
     fun setAdapter(adapter: NavigationAdapter?)

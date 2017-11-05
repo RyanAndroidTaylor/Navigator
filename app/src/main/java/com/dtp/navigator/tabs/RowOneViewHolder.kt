@@ -8,7 +8,7 @@ import com.dtp.renav.base.ViewRowHolder
 /**
  * Created by ner on 7/20/17.
  */
-class RowOneViewHolder(override val rootView: ViewGroup) : ViewRowHolder<Int> {
+class RowOneViewHolder(override val rootView: ViewGroup) : ViewRowHolder<Int>() {
 
     private val text: TextView = rootView.findViewById(R.id.textView)
 

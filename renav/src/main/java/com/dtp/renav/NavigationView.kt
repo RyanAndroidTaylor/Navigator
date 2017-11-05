@@ -21,6 +21,11 @@ import org.xmlpull.v1.XmlPullParserException
 
 class NavigationView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : FrameLayout(context, attrs) {
 
+    companion object {
+        @JvmStatic
+        var shouldRecycleViews: Boolean = true
+    }
+
     private var activity: AppCompatActivity? = null
 
     var container: NavigationContainer = ViewNavigationContainer()
@@ -29,6 +34,8 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
     var navigationManager: NavigationManager? = null
         set(value) {
             field = value
+
+            field?.shouldRecycleViews = shouldRecycleViews
 
             field?.attachNavigationView(this)
 
