@@ -13,7 +13,9 @@ abstract class SimpleNavigationAdapter(columns: List<Column>) : NavigationAdapte
 
     init {
         val columnMap = mutableMapOf<Int, Column>()
-        columns.forEach { columnMap.put(it.columnId, it) }
+
+        columns.forEach { columnMap[it.columnId] = it }
+
         this.columnMap = columnMap
     }
 

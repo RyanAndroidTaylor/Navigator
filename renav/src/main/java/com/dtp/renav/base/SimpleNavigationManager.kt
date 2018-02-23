@@ -36,9 +36,12 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
     }
 
     override fun columnSelected(columnId: Int) {
-        Log.i("SimpleNavigationManager", "Colum selected $columnId")
         adapter?.let { adapter ->
             currentColumnId = columnId
+
+            // The first time a column is selected the RowHolder has not been created for it yet
+            if (rowHolderStack.peek(currentColumnId) == null)
+                rowHolderStack.push(currentColumnId, createRowHolder(adapter, adapter.getRowId(currentColumnId)))
 
             bindCurrentColumn()
         } ?: Log.i("BasicNavigationManager", "Column selected but no adapter was found.")
@@ -62,15 +65,11 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
 
     override fun pushRow(row: SimpleNavigationAdapter.Row<*>) {
         adapter?.let { adapter ->
+            unbindCurrentColumn()
+
             adapter.pushRow(currentColumnId, row)
 
-            if (!shouldRecycleViews) {
-                val layoutInflater = LayoutInflater.from(navigationView.context)
-
-                val rowHolder = adapter.createRowViewHolderForId(layoutInflater, navigationView.container, row.rowId)
-
-                rowHolderStack.push(currentColumnId, rowHolder)
-            }
+            rowHolderStack.push(currentColumnId, createRowHolder(adapter, row.rowId))
 
             bindCurrentColumn()
         }
@@ -78,10 +77,11 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
 
     override fun popRow() {
         adapter?.let { adapter ->
+            unbindCurrentColumn()
+
             adapter.popRow(currentColumnId)
 
-            if (!shouldRecycleViews)
-                rowHolderStack.pop(currentColumnId)
+            rowHolderStack.pop(currentColumnId)
 
             bindCurrentColumn()
         }
@@ -119,6 +119,8 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
     override fun handleBack(): Boolean {
         return adapter?.let { adapter ->
             if (adapter.handleBack(currentColumnId)) {
+                unbindCurrentColumn()
+
                 bindCurrentColumn()
 
                 true
@@ -128,10 +130,32 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
         } ?: false
     }
 
-    private fun bindCurrentColumn() {
-        adapter?.let { adapter ->
-            val rowId = adapter.getRowId(currentColumnId)
+    private fun createRowHolder(adapter: NavigationAdapter, rowId: Int): RowHolder<*> {
+        return if (shouldRecycleViews) {
+            rowHolderPool.getRowViewHolder(rowId) ?: let {
+                val layoutInflater = LayoutInflater.from(navigationView.context)
 
+                val rowHolder = adapter.createRowViewHolderForId(layoutInflater, navigationView.container, rowId)
+
+                rowHolderPool.putRowViewHolder(rowId, rowHolder)
+
+                rowHolder
+            }
+        } else {
+            rowHolderStack.peek(currentColumnId) ?: let {
+                val layoutInflater = LayoutInflater.from(navigationView.context)
+
+                val rowHolder = adapter.createRowViewHolderForId(layoutInflater, navigationView.container, rowId)
+
+                rowHolderStack.push(currentColumnId, rowHolder)
+
+                rowHolder
+            }
+        }
+    }
+
+    private fun unbindCurrentColumn() {
+        adapter?.let { adapter ->
             currentRowHolder?.let { rowViewHolder ->
 
                 currentRowHolder?.onPause()
@@ -143,34 +167,22 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
                 if (shouldRecycleViews)
                     rowHolderPool.putRowViewHolder(adapter.getRowId(currentColumnId), rowViewHolder)
             }
+        }
+    }
 
-            val viewHolder: RowHolder<*> = if (shouldRecycleViews) {
-                rowHolderPool.getRowViewHolder(rowId) ?: let {
-                    val layoutInflater = LayoutInflater.from(navigationView.context)
+    private fun bindCurrentColumn() {
+        adapter?.let { adapter ->
+            rowHolderStack.peek(currentColumnId)?.let { viewHolder ->
+                currentRowHolder = viewHolder
 
-                    adapter.createRowViewHolderForId(layoutInflater, navigationView.container, rowId)
-                }
-            } else {
-                rowHolderStack.peek(currentColumnId) ?: let {
-                    val layoutInflater = LayoutInflater.from(navigationView.context)
+                navigationView.attachRowViewHolder(viewHolder)
 
-                    val rowHolder = adapter.createRowViewHolderForId(layoutInflater, navigationView.container, rowId)
+                currentRowHolder?.onResume()
 
-                    rowHolderStack.push(currentColumnId, rowHolder)
+                currentRowHolder?.onAttach(this)
 
-                    rowHolder
-                }
+                adapter.bindColumnView(currentColumnId, viewHolder)
             }
-
-            currentRowHolder = viewHolder
-
-            navigationView.attachRowViewHolder(viewHolder)
-
-            currentRowHolder?.onResume()
-
-            currentRowHolder?.onAttach(this)
-
-            adapter.bindColumnView(currentColumnId, viewHolder)
         }
     }
 }
