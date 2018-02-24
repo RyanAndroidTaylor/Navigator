@@ -37,6 +37,8 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
 
     override fun columnSelected(columnId: Int) {
         adapter?.let { adapter ->
+            unbindCurrentColumn()
+
             currentColumnId = columnId
 
             // The first time a column is selected the RowHolder has not been created for it yet
@@ -121,6 +123,8 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
             if (adapter.handleBack(currentColumnId)) {
                 unbindCurrentColumn()
 
+                createRowHolder(adapter, adapter.getRowId(currentColumnId))
+
                 bindCurrentColumn()
 
                 true
@@ -131,7 +135,7 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
     }
 
     private fun createRowHolder(adapter: NavigationAdapter, rowId: Int): RowHolder<*> {
-        return if (shouldRecycleViews) {
+        val rowHolder: RowHolder<*> = if (shouldRecycleViews) {
             rowHolderPool.getRowViewHolder(rowId) ?: let {
                 val layoutInflater = LayoutInflater.from(navigationView.context)
 
@@ -145,13 +149,13 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
             rowHolderStack.peek(currentColumnId) ?: let {
                 val layoutInflater = LayoutInflater.from(navigationView.context)
 
-                val rowHolder = adapter.createRowViewHolderForId(layoutInflater, navigationView.container, rowId)
-
-                rowHolderStack.push(currentColumnId, rowHolder)
-
-                rowHolder
+                adapter.createRowViewHolderForId(layoutInflater, navigationView.container, rowId)
             }
         }
+
+        rowHolderStack.push(currentColumnId, rowHolder)
+
+        return rowHolder
     }
 
     private fun unbindCurrentColumn() {
