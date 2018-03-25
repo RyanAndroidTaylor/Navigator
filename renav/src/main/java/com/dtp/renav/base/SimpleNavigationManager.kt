@@ -123,7 +123,7 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
             if (adapter.handleBack(currentColumnId)) {
                 unbindCurrentColumn()
 
-                createRowHolder(adapter, adapter.getRowId(currentColumnId))
+                rowHolderStack.push(currentColumnId, createRowHolder(adapter, adapter.getRowId(currentColumnId)))
 
                 bindCurrentColumn()
 
@@ -152,8 +152,6 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
                 adapter.createRowViewHolderForId(layoutInflater, navigationView.container, rowId)
             }
         }
-
-        rowHolderStack.push(currentColumnId, rowHolder)
 
         return rowHolder
     }
