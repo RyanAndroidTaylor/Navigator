@@ -12,7 +12,7 @@ class RowHolderStack {
 
     fun push(columnId: Int, rowHolder: RowHolder<*>) {
         if (!rowHolderMap.containsKey(columnId))
-            rowHolderMap.put(columnId, Stack())
+            rowHolderMap[columnId] = Stack()
 
         rowHolderMap[columnId]!!.push(rowHolder)
     }

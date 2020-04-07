@@ -19,7 +19,7 @@ class SimpleRowHolderPool : RowHolderPool {
 
     override fun putRowViewHolder(rowId: Int, rowHolder: RowHolder<*>) {
         if (!rowViewHolders.containsKey(rowId))
-            rowViewHolders.put(rowId, rowHolder)
+            rowViewHolders[rowId] = rowHolder
     }
 
     override fun destroyRowHolders() {

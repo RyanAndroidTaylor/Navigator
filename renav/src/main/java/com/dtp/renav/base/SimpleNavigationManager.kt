@@ -135,7 +135,7 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
     }
 
     private fun createRowHolder(adapter: NavigationAdapter, rowId: Int): RowHolder<*> {
-        val rowHolder: RowHolder<*> = if (shouldRecycleViews) {
+        return if (shouldRecycleViews) {
             rowHolderPool.getRowViewHolder(rowId) ?: let {
                 val layoutInflater = LayoutInflater.from(navigationView.context)
 
@@ -152,8 +152,6 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
                 adapter.createRowViewHolderForId(layoutInflater, navigationView.container, rowId)
             }
         }
-
-        return rowHolder
     }
 
     private fun unbindCurrentColumn() {

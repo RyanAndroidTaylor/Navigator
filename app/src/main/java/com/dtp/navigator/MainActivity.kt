@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
         navView = findViewById(R.id.nav_view)
 
         val manager = SimpleNavigationManager(MainNavigationAdapter(columns))
+
         navView.navigationManager = manager
     }
 
