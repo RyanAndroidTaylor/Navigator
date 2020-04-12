@@ -1,19 +1,19 @@
 package com.dtp.renav.interfaces
 
 import android.view.LayoutInflater
-import com.dtp.renav.base.SimpleNavigationAdapter.Row
+import com.dtp.renav.base.SimpleNavigationAdapter.ScreenData
 
 /**
  * Created by ner on 7/12/17.
  */
 interface NavigationAdapter {
 
-    fun getRowId(columnId: Int): Int
-    fun createRowViewHolderForId(layoutInflater: LayoutInflater, container: NavigationContainer, rowId: Int): RowHolder<*>
-    fun bindColumnView(columnId: Int, rowHolder: RowHolder<*>)
+    fun getScreenId(columnId: Int): Int
+    fun createRowViewHolderForId(layoutInflater: LayoutInflater, container: NavigationContainer, rowId: Int): Screen<*>
+    fun bindColumnView(columnId: Int, screen: Screen<*>)
 
-    fun pushRow(columnId: Int, row: Row<*>)
-    fun popRow(columnId: Int)
+    fun pushScreen(columnId: Int, screenData: ScreenData<*>)
+    fun popScreen(columnId: Int)
 
     fun handleBack(columnId: Int): Boolean
 }

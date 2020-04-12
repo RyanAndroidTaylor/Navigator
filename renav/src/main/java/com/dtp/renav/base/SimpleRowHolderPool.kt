@@ -1,6 +1,6 @@
 package com.dtp.renav.base
 
-import com.dtp.renav.interfaces.RowHolder
+import com.dtp.renav.interfaces.Screen
 import com.dtp.renav.interfaces.RowHolderPool
 
 /**
@@ -8,18 +8,18 @@ import com.dtp.renav.interfaces.RowHolderPool
  */
 class SimpleRowHolderPool : RowHolderPool {
 
-    private val rowViewHolders = mutableMapOf<Int, RowHolder<*>>()
+    private val rowViewHolders = mutableMapOf<Int, Screen<*>>()
 
-    override fun getRowViewHolder(rowId: Int): RowHolder<*>? {
+    override fun getRowViewHolder(rowId: Int): Screen<*>? {
         if (rowViewHolders.containsKey(rowId))
             return rowViewHolders[rowId]
 
         return null
     }
 
-    override fun putRowViewHolder(rowId: Int, rowHolder: RowHolder<*>) {
+    override fun putRowViewHolder(rowId: Int, screen: Screen<*>) {
         if (!rowViewHolders.containsKey(rowId))
-            rowViewHolders[rowId] = rowHolder
+            rowViewHolders[rowId] = screen
     }
 
     override fun destroyRowHolders() {

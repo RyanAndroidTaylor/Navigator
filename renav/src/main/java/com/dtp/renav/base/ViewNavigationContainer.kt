@@ -2,7 +2,7 @@ package com.dtp.renav.base
 
 import android.view.ViewGroup
 import com.dtp.renav.interfaces.NavigationContainer
-import com.dtp.renav.interfaces.RowHolder
+import com.dtp.renav.interfaces.Screen
 
 /**
  * Created by ner on 9/5/17.
@@ -22,8 +22,8 @@ class ViewNavigationContainer : NavigationContainer {
         rootContainerView.removeAllViews()
     }
 
-    override fun attachViewHolder(holder: RowHolder<*>) {
-        if (holder is ViewRowHolder<*>) {
+    override fun attachViewHolder(holder: Screen<*>) {
+        if (holder is ViewScreen<*>) {
             rootContainerView.addView(holder.rootView)
         } else {
             throw IllegalArgumentException("RowHolder is not of type ViewRowHolder")

@@ -5,8 +5,8 @@ package com.dtp.renav.interfaces
  */
 interface RowHolderPool {
 
-    fun getRowViewHolder(rowId: Int): RowHolder<*>?
-    fun putRowViewHolder(rowId: Int, rowHolder: RowHolder<*>)
+    fun getRowViewHolder(rowId: Int): Screen<*>?
+    fun putRowViewHolder(rowId: Int, screen: Screen<*>)
 
     fun destroyRowHolders()
 }

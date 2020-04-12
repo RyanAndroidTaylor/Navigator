@@ -1,14 +1,17 @@
 package com.dtp.renav.interfaces
 
+import android.app.Activity
 import android.content.Intent
-import android.support.v7.widget.Toolbar
 import android.view.MenuItem
-import com.dtp.renav.base.SimpleNavigationAdapter.Row
+import androidx.appcompat.widget.Toolbar
+import com.dtp.renav.base.SimpleNavigationAdapter.ScreenData
 
 /**
  * Created by ner on 7/12/17.
  */
-interface RowHolder<in T> {
+interface Screen<in T> {
+    var activity: Activity?
+
     fun bind(item: T)
 
     fun onAttach(navigationManager: NavigationManager) {}
@@ -18,8 +21,8 @@ interface RowHolder<in T> {
     fun onPause() {}
     fun onDestroy() {}
 
-    fun pushRow(row: Row<*>)
-    fun popRow()
+    fun pushScreen(screenData: ScreenData<*>)
+    fun popScreen()
 
     fun onOptionsItemSelected(item: MenuItem?): Boolean
 

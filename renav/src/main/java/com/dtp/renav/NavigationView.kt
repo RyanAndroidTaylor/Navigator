@@ -3,19 +3,18 @@ package com.dtp.renav
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.support.v4.app.ActivityCompat
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
 import android.util.AttributeSet
 import android.util.Xml
 import android.view.MenuItem
-import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
 import com.dtp.renav.base.ViewNavigationContainer
 import com.dtp.renav.interfaces.NavigationContainer
 import com.dtp.renav.interfaces.NavigationManager
-import com.dtp.renav.interfaces.RowHolder
+import com.dtp.renav.interfaces.Screen
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 
@@ -64,8 +63,8 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val measureWidth = View.MeasureSpec.getSize(widthMeasureSpec)
-        val measureHeight = View.MeasureSpec.getSize(heightMeasureSpec)
+        val measureWidth = MeasureSpec.getSize(widthMeasureSpec)
+        val measureHeight = MeasureSpec.getSize(heightMeasureSpec)
 
         val childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(measureWidth, MeasureSpec.EXACTLY)
         val childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(measureHeight - BOTTOM_BAR_HEIGHT, MeasureSpec.EXACTLY)
@@ -195,11 +194,12 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
     }
 
     private fun readItem(attrs: AttributeSet) {
-        val typedArray = context.obtainStyledAttributes(attrs, android.support.v7.appcompat.R.styleable.MenuItem)
+        //TODO Looks like I was using some kind of default android items here
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.MenuItem)
 
-        val itemId = typedArray.getResourceId(android.support.v7.appcompat.R.styleable.MenuItem_android_id, -1)
-        val itemTitle = typedArray.getText(android.support.v7.appcompat.R.styleable.MenuItem_android_title)
-        val itemIconResId = typedArray.getResourceId(android.support.v7.appcompat.R.styleable.MenuItem_android_icon, -1)
+        val itemId = typedArray.getResourceId(R.styleable.MenuItem_android_id, -1)
+        val itemTitle = typedArray.getText(R.styleable.MenuItem_android_title)
+        val itemIconResId = typedArray.getResourceId(R.styleable.MenuItem_android_icon, -1)
 
         navigationBar.addColumn(itemId, itemTitle.toString(), itemIconResId)
 
@@ -215,7 +215,7 @@ class NavigationView @JvmOverloads constructor(context: Context, attrs: Attribut
         container.detachCurrentViewHolder()
     }
 
-    fun attachRowViewHolder(holder: RowHolder<*>) {
+    fun attachRowViewHolder(holder: Screen<*>) {
         container.attachViewHolder(holder)
     }
 }

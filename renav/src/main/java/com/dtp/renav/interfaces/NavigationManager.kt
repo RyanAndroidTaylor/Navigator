@@ -1,15 +1,18 @@
 package com.dtp.renav.interfaces
 
+import android.app.Activity
 import android.content.Intent
-import android.support.v7.widget.Toolbar
 import android.view.MenuItem
+import androidx.appcompat.widget.Toolbar
 import com.dtp.renav.NavigationView
-import com.dtp.renav.base.SimpleNavigationAdapter.Row
+import com.dtp.renav.base.SimpleNavigationAdapter.ScreenData
 
 /**
  * Created by ner on 7/12/17.
  */
 interface NavigationManager {
+
+    var activity: Activity?
 
     var shouldRecycleViews: Boolean
 
@@ -19,12 +22,13 @@ interface NavigationManager {
 
     fun columnSelected(columnId: Int)
 
+    // TODO Make NavigationManager lifecycle aware
     fun onResume()
     fun onPause()
     fun onDestroy()
 
-    fun pushRow(row: Row<*>)
-    fun popRow()
+    fun pushScreen(screenData: ScreenData<*>)
+    fun popScreen()
 
     fun onOptionsItemSelected(item: MenuItem?): Boolean
 

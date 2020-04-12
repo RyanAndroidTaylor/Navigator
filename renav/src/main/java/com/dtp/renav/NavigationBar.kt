@@ -3,8 +3,6 @@ package com.dtp.renav
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.*
-import android.support.graphics.drawable.VectorDrawableCompat
-import android.support.v4.content.ContextCompat
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -12,7 +10,10 @@ import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
+import androidx.core.content.ContextCompat
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.dtp.renav.interfaces.NavigationManager
+import kotlin.math.min
 
 /**
  * Created by ner on 9/16/17.
@@ -44,6 +45,7 @@ class NavigationBar @JvmOverloads constructor(context: Context, attrs: Attribute
 
     init {
         layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT)
+
         (layoutParams as FrameLayout.LayoutParams).gravity = Gravity.BOTTOM
 
         backgroundPaint.color = ContextCompat.getColor(context, R.color.nav_view_background)
@@ -69,19 +71,15 @@ class NavigationBar @JvmOverloads constructor(context: Context, attrs: Attribute
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val widthMode = View.MeasureSpec.getMode(widthMeasureSpec)
-        val measureWidth = View.MeasureSpec.getSize(widthMeasureSpec)
+        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
+        val measureWidth = MeasureSpec.getSize(widthMeasureSpec)
 
         val wrapContentWidth = columns.size * MIN_COLUMN_WIDTH
 
         val width = when (widthMode) {
-            View.MeasureSpec.UNSPECIFIED -> {
-                measureWidth
-            }
-            View.MeasureSpec.AT_MOST -> {
-                Math.min(widthMode, wrapContentWidth)
-            }
-            View.MeasureSpec.EXACTLY -> measureWidth
+            MeasureSpec.UNSPECIFIED -> measureWidth
+            MeasureSpec.AT_MOST -> min(widthMode, wrapContentWidth)
+            MeasureSpec.EXACTLY -> measureWidth
             else -> measureWidth
         }
 

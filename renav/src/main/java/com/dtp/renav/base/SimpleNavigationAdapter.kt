@@ -1,7 +1,7 @@
 package com.dtp.renav.base
 
 import com.dtp.renav.interfaces.NavigationAdapter
-import com.dtp.renav.interfaces.RowHolder
+import com.dtp.renav.interfaces.Screen
 import java.util.*
 
 /**
@@ -19,36 +19,36 @@ abstract class SimpleNavigationAdapter(columns: List<Column>) : NavigationAdapte
         this.columnMap = columnMap
     }
 
-    override fun getRowId(columnId: Int): Int {
-        return columnMap[columnId]?.rows?.peek()?.rowId ?: -1
+    override fun getScreenId(columnId: Int): Int {
+        return columnMap[columnId]?.screens?.peek()?.screenId ?: -1
     }
 
-    override fun bindColumnView(columnId: Int, rowHolder: RowHolder<*>) {
-        columnMap[columnId]?.rows?.peek()?.bind(rowHolder)
+    override fun bindColumnView(columnId: Int, screen: Screen<*>) {
+        columnMap[columnId]?.screens?.peek()?.bind(screen)
     }
 
-    override fun pushRow(columnId: Int, row: Row<*>) {
-        columnMap[columnId]?.rows?.push(row)
+    override fun pushScreen(columnId: Int, screenData: ScreenData<*>) {
+        columnMap[columnId]?.screens?.push(screenData)
     }
 
-    override fun popRow(columnId: Int) {
-        columnMap[columnId]?.rows?.pop()
+    override fun popScreen(columnId: Int) {
+        columnMap[columnId]?.screens?.pop()
     }
 
     override fun handleBack(columnId: Int): Boolean {
         return columnMap[columnId]?.handleBackPressed() ?: false
     }
 
-    class Column(val columnId: Int, rootRow: Row<*>) {
-        val rows = Stack<Row<*>>()
+    class Column(val columnId: Int, rootScreenData: ScreenData<*>) {
+        val screens = Stack<ScreenData<*>>()
 
         init {
-            rows.push(rootRow)
+            screens.push(rootScreenData)
         }
 
         open fun handleBackPressed(): Boolean {
-            return if (rows.size > 1) {
-                rows.pop()
+            return if (screens.size > 1) {
+                screens.pop()
 
                 true
             } else
@@ -56,12 +56,15 @@ abstract class SimpleNavigationAdapter(columns: List<Column>) : NavigationAdapte
         }
     }
 
-    abstract class Row<T>(private val item: T) {
-        abstract val rowId: Int
+    /**
+     * Connects the screens data to its ID
+     */
+    abstract class ScreenData<T>(private val item: T) {
+        abstract val screenId: Int
 
         @Suppress("UNCHECKED_CAST")
-        fun bind(rowHolder: RowHolder<*>) {
-            (rowHolder as RowHolder<T>).bind(item)
+        fun bind(screen: Screen<*>) {
+            (screen as Screen<T>).bind(item)
         }
     }
 }

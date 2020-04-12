@@ -11,5 +11,5 @@ interface NavigationContainer {
 
     fun detachCurrentViewHolder()
 
-    fun attachViewHolder(holder: RowHolder<*>)
+    fun attachViewHolder(holder: Screen<*>)
 }

@@ -1,14 +1,15 @@
 package com.dtp.renav.base
 
+import android.app.Activity
 import android.content.Intent
-import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
+import androidx.appcompat.widget.Toolbar
 import com.dtp.renav.NavigationView
 import com.dtp.renav.interfaces.NavigationAdapter
 import com.dtp.renav.interfaces.NavigationManager
-import com.dtp.renav.interfaces.RowHolder
+import com.dtp.renav.interfaces.Screen
 import com.dtp.renav.interfaces.RowHolderPool
 
 /**
@@ -21,9 +22,11 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
 
     private var currentColumnId: Int = -1
 
-    private var currentRowHolder: RowHolder<*>? = null
+    private var currentScreen: Screen<*>? = null
 
     private lateinit var navigationView: NavigationView
+
+    override var activity: Activity? = null
 
     override var shouldRecycleViews: Boolean = true
 
@@ -43,45 +46,45 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
 
             // The first time a column is selected the RowHolder has not been created for it yet
             if (rowHolderStack.peek(currentColumnId) == null)
-                rowHolderStack.push(currentColumnId, createRowHolder(adapter, adapter.getRowId(currentColumnId)))
+                rowHolderStack.push(currentColumnId, createRowHolder(adapter, adapter.getScreenId(currentColumnId)))
 
             bindCurrentColumn()
         } ?: Log.i("BasicNavigationManager", "Column selected but no adapter was found.")
     }
 
     override fun onResume() {
-        currentRowHolder?.onResume()
+        currentScreen?.onResume()
     }
 
     override fun onPause() {
-        currentRowHolder?.onPause()
+        currentScreen?.onPause()
     }
 
     override fun onDestroy() {
-        currentRowHolder?.onDetach()
+        currentScreen?.onDetach()
 
-        currentRowHolder?.onDestroy()
+        currentScreen?.onDestroy()
 
         rowHolderPool.destroyRowHolders()
     }
 
-    override fun pushRow(row: SimpleNavigationAdapter.Row<*>) {
+    override fun pushScreen(screenData: SimpleNavigationAdapter.ScreenData<*>) {
         adapter?.let { adapter ->
             unbindCurrentColumn()
 
-            adapter.pushRow(currentColumnId, row)
+            adapter.pushScreen(currentColumnId, screenData)
 
-            rowHolderStack.push(currentColumnId, createRowHolder(adapter, row.rowId))
+            rowHolderStack.push(currentColumnId, createRowHolder(adapter, screenData.screenId))
 
             bindCurrentColumn()
         }
     }
 
-    override fun popRow() {
+    override fun popScreen() {
         adapter?.let { adapter ->
             unbindCurrentColumn()
 
-            adapter.popRow(currentColumnId)
+            adapter.popScreen(currentColumnId)
 
             rowHolderStack.pop(currentColumnId)
 
@@ -89,7 +92,7 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean = currentRowHolder?.onOptionsItemSelected(item) == true
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean = currentScreen?.onOptionsItemSelected(item) == true
 
     override fun setSupportActionBar(toolbar: Toolbar) {
         navigationView.setSupportActionBar(toolbar)
@@ -107,7 +110,7 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
 
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        currentRowHolder?.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        currentScreen?.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     override fun startActivityForResult(intent: Intent, requestCode: Int) {
@@ -115,7 +118,7 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        currentRowHolder?.onActivityResult(requestCode, resultCode, data)
+        currentScreen?.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun handleBack(): Boolean {
@@ -123,7 +126,7 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
             if (adapter.handleBack(currentColumnId)) {
                 unbindCurrentColumn()
 
-                rowHolderStack.push(currentColumnId, createRowHolder(adapter, adapter.getRowId(currentColumnId)))
+                rowHolderStack.push(currentColumnId, createRowHolder(adapter, adapter.getScreenId(currentColumnId)))
 
                 bindCurrentColumn()
 
@@ -134,7 +137,7 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
         } ?: false
     }
 
-    private fun createRowHolder(adapter: NavigationAdapter, rowId: Int): RowHolder<*> {
+    private fun createRowHolder(adapter: NavigationAdapter, rowId: Int): Screen<*> {
         return if (shouldRecycleViews) {
             rowHolderPool.getRowViewHolder(rowId) ?: let {
                 val layoutInflater = LayoutInflater.from(navigationView.context)
@@ -156,16 +159,16 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
 
     private fun unbindCurrentColumn() {
         adapter?.let { adapter ->
-            currentRowHolder?.let { rowViewHolder ->
+            currentScreen?.let { rowViewHolder ->
 
-                currentRowHolder?.onPause()
+                currentScreen?.onPause()
 
-                currentRowHolder?.onDetach()
+                currentScreen?.onDetach()
 
                 navigationView.detachCurrentRowViewHolder()
 
                 if (shouldRecycleViews)
-                    rowHolderPool.putRowViewHolder(adapter.getRowId(currentColumnId), rowViewHolder)
+                    rowHolderPool.putRowViewHolder(adapter.getScreenId(currentColumnId), rowViewHolder)
             }
         }
     }
@@ -173,13 +176,13 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
     private fun bindCurrentColumn() {
         adapter?.let { adapter ->
             rowHolderStack.peek(currentColumnId)?.let { viewHolder ->
-                currentRowHolder = viewHolder
+                currentScreen = viewHolder
 
                 navigationView.attachRowViewHolder(viewHolder)
 
-                currentRowHolder?.onResume()
+                currentScreen?.onResume()
 
-                currentRowHolder?.onAttach(this)
+                currentScreen?.onAttach(this)
 
                 adapter.bindColumnView(currentColumnId, viewHolder)
             }
