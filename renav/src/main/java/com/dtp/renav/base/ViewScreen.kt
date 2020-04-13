@@ -1,5 +1,6 @@
 package com.dtp.renav.base
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.view.MenuItem
@@ -34,11 +35,15 @@ abstract class ViewScreen<in T> : Screen<T>, LifecycleOwner {
 
     override fun getLifecycle() = lifecycleRegistry
 
-    override fun onAttach(navigationManager: NavigationManager) {
+    override fun onAttach(activity: Activity?, navigationManager: NavigationManager) {
+        this.activity = activity
         this.navigationManager = navigationManager
+
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
     }
 
     override fun onDetach() {
+        activity = null
         navigationManager = null
 
         //TODO Work out when ON_STOP and ON_CREATE should be called

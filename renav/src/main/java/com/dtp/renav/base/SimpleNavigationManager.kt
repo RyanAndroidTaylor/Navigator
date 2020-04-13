@@ -15,6 +15,7 @@ import com.dtp.renav.interfaces.RowHolderPool
 /**
  * Created by ner on 7/14/17.
  */
+//TODO Make lifecycle aware so you don't have to call all the lifecycle methods in the activity
 class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : NavigationManager {
 
     private val rowHolderPool: RowHolderPool by lazy { SimpleRowHolderPool() }
@@ -180,9 +181,9 @@ class SimpleNavigationManager(private var adapter: NavigationAdapter? = null) : 
 
                 navigationView.attachRowViewHolder(viewHolder)
 
-                currentScreen?.onResume()
+                currentScreen?.onAttach(activity, this)
 
-                currentScreen?.onAttach(this)
+                currentScreen?.onResume()
 
                 adapter.bindColumnView(currentColumnId, viewHolder)
             }

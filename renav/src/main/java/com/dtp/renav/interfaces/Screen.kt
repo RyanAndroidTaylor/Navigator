@@ -14,7 +14,7 @@ interface Screen<in T> {
 
     fun bind(item: T)
 
-    fun onAttach(navigationManager: NavigationManager) {}
+    fun onAttach(activity: Activity?, navigationManager: NavigationManager) {}
     fun onDetach() {}
 
     fun onResume() {}
